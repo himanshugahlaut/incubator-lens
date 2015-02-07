@@ -17,4 +17,64 @@
 ~~ under the License.
 ~~
 
-~~~
+Pseudo Distributed Setup
+
+  Lens pseudo-distributed setup is done using docker. Hive server and hadoop daemons are run as separate processes in lens pseudo-distributed setup. Lens docker files are located in
+
++---+
+  incubator-lens/lens-docker/lens-test
++---+
+
+  The above directory contains the lens docker images that can be used for development and testing.
+
+  To build the image
+
++---+
+  cd tools/scripts
+  ./build-docker.sh
++---+
+
+  Before running the build, docker must be installed in the system. The above script will build the lens docker image and download the dependent images of hive and hadoop.
+
+*  Steps to run lens docker image
+
+  Initialize Boot2Docker
+
++---+
+  boot2docker init
++---+
+
+  Start Boot2Docker
+
++---+
+  boot2docker start
++---+
+
+  You will see an output similar to the one pasted below:
+
++---+
+  Waiting for VM and Docker daemon to start...
+  .....o
+  Started.
+  Writing /Users/<user-name>/.boot2docker/certs/boot2docker-vm/ca.pem
+  Writing /Users/<user-name>/.boot2docker/certs/boot2docker-vm/cert.pem
+  Writing /Users/<user-name>/.boot2docker/certs/boot2docker-vm/key.pem
+
+  To connect the Docker client to the Docker daemon, please set:
+      export DOCKER_HOST=tcp://192.168.59.103:2376
+      export DOCKER_CERT_PATH=/Users/<user-name>/.boot2docker/certs/boot2docker-vm
+      export DOCKER_TLS_VERIFY=1
++---+
+
+   Export all variables as mentioned in the output on your machine.
+
+   Run the image
+
++---+
+  $(boot2docker shellinit)
+  cd tools/scripts
+  ./run-docker.sh
++---+
+
+  This will start the docker container and the container will have its Lens directories mounted to your actual checked out code, allowing you to modify and recompile your Lens source and have them immediately usable in the docker images (without rebuilding the image).
+
