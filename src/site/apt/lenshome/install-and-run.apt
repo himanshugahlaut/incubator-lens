@@ -26,7 +26,7 @@ Installing and Running Lens
 ** Downloading
 
   Download a release of Apache Lens from {{{/releases/download.html}here}}.
-  Lens depends on InMobi Hive. Download a release of InMobi hive from {{{https://github.com/InMobi/hive/releases}here}}.
+  Lens depends on Hive forked from Apache Hive. Download a release of hive from {{{https://github.com/InMobi/hive/releases}https://github.com/InMobi/hive/releases}}.
 
 ** Installing Lens
 
@@ -34,7 +34,7 @@ Installing and Running Lens
 
 +---+
 
-  tar -xzvf lens-dist-<verison>-bin.tar.gz
+  tar zxvf lens-dist-<verison>-bin.tar.gz
 
 +---+
 
@@ -49,23 +49,38 @@ Installing and Running Lens
 
  <lens-dist-verison-bin/client> can be used as the Lens client installation directory and <lens-dist-verison-bin/server> can be used as the Lens server installation directory to {{{#Running_Lens}run}} lens client and lens server respectively.
 
-** Installing InMobi Hive
+** Installing Hive
 
-  Unpack the tarball. This will result in the creation of a directory named hive-hive-release-x.y.z-inm (where x.y.z is the release number):
-
-+---+
-
-  tar -xzvf hive-hive-release-x.y.z-inm.tar.gz
+  Unpack the tarball.
 
 +---+
 
-  Set the environment variable HIVE_HOME to point to the installation directory:
+  tar -xzvf hive-hive-release-<version>-inm.tar.gz
 
 +---+
 
-  cd hive-hive-release-x.y.z-inm
+  This will result in the creation of a directory named hive-hive-release-<version>-inm. This directory contains hive source code. Build hive binary using below commands.
+
++---+
+
+  cd hive-hive-release-<version>-inm
+  mvn clean package -DskipTests -Phadoop-2,dist
+
++---+
+
+  This will result in creation of hive binary, which can be found at location packaging/target/apache-hive-<version>-inm-bin.tar.gz.
+  Unpack the created hive tarball in the directory where you want to install hive.
+
++---+
+  tar zxvf apache-hive-<version>-inm-bin.tar.gz
++---+
+
+  This will result in creation of directory apache-hive-<version>-inm-bin.
+  Set HIVE_HOME.
+
++---+
+  cd apache-hive-<version>-inm-bin
   export HIVE_HOME=`pwd`
-
 +---+
 
 * Running Lens
@@ -111,7 +126,7 @@ Installing and Running Lens
 
 *** Setting Environment Variables
 
-  Before starting the server, you need to set <<HADOOP_HOME>> and <<HIVE_HOME>> environment variables. These should point to the Hadoop and InMobi Hive installation directories.
+  Before starting the server, you need to set <<HADOOP_HOME>> and <<HIVE_HOME>> environment variables. These should point to the Hadoop and Hive installation directories.
 
 *** Starting Lens server
 
@@ -199,7 +214,7 @@ Installing and Running Lens
 
 +---+
 
-  bin/lens-cli.sh start
+  bin/lens-cli.sh
 
 +---+
 
