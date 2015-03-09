@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.lens.api.APIResult;
 import org.apache.lens.api.query.*;
+import org.apache.lens.api.response.SuccessResponse;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -276,7 +277,9 @@ public class LensStatement {
     WebTarget target = getQueryWebTarget(client);
 
     QueryHandle handle = target.request()
-      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
+        .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), new GenericType<SuccessResponse<QueryHandle>>() {
+        }).getData();
+
     return handle;
   }
 
@@ -302,7 +305,9 @@ public class LensStatement {
       : queryName));
 
     QueryHandle handle = target.request()
-      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
+      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), new GenericType<SuccessResponse<QueryHandle>>() {
+      }).getData();
+
     return handle;
   }
 
@@ -326,7 +331,8 @@ public class LensStatement {
 
     WebTarget target = getQueryWebTarget(client);
 
-    QueryPlan handle = target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryPlan.class);
+    QueryPlan handle = target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+        new GenericType<SuccessResponse<QueryPlan>>() {}).getData();
     return handle;
   }
 

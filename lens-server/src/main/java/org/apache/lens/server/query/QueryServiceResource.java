@@ -18,6 +18,8 @@
  */
 package org.apache.lens.server.query;
 
+import static java.util.UUID.randomUUID;
+
 import java.util.List;
 
 import javax.ws.rs.*;
@@ -30,11 +32,13 @@ import org.apache.lens.api.LensConf;
 import org.apache.lens.api.LensException;
 import org.apache.lens.api.LensSessionHandle;
 import org.apache.lens.api.query.*;
+import org.apache.lens.api.response.SuccessResponse;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -166,10 +170,13 @@ public class QueryServiceResource {
   @Consumes({MediaType.MULTIPART_FORM_DATA})
   @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN})
   @MultiPurposeResource(formParamName = "operation")
-  public QuerySubmitResult query(@FormDataParam("sessionid") LensSessionHandle sessionid,
+  public SuccessResponse<QuerySubmitResult> query(@FormDataParam("sessionid") LensSessionHandle sessionid,
     @FormDataParam("query") String query, @FormDataParam("operation") String operation,
     @FormDataParam("conf") LensConf conf, @DefaultValue("30000") @FormDataParam("timeoutmillis") Long timeoutmillis,
     @DefaultValue("") @FormDataParam("queryName") String queryName) {
+
+    final String id = randomUUID().toString();
+
     checkQuery(query);
     checkSessionId(sessionid);
     try {
@@ -182,18 +189,27 @@ public class QueryServiceResource {
       if (sop == null) {
         throw new BadRequestException("Invalid operation type: " + operation + submitClue);
       }
+      QuerySubmitResult result = null;
       switch (sop) {
       case ESTIMATE:
-        return queryServer.estimate(sessionid, query, conf);
+        result = queryServer.estimate(sessionid, query, conf);
+        break;
       case EXECUTE:
-        return queryServer.executeAsync(sessionid, query, conf, queryName);
+        result = queryServer.executeAsync(sessionid, query, conf, queryName);
+        break;
       case EXPLAIN:
-        return queryServer.explain(sessionid, query, conf);
+        result = queryServer.explain(sessionid, query, conf);
+        break;
       case EXECUTE_WITH_TIMEOUT:
-        return queryServer.execute(sessionid, query, timeoutmillis, conf, queryName);
+        result = queryServer.execute(sessionid, query, timeoutmillis, conf, queryName);
+        break;
       default:
         throw new BadRequestException("Invalid operation type: " + operation + submitClue);
       }
+
+      final String apiVersion = "1.0";
+      return new SuccessResponse<QuerySubmitResult>(apiVersion, id, result);
+
     } catch (LensException e) {
       throw new WebApplicationException(e);
     }
