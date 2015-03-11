@@ -442,7 +442,8 @@ public class TestQueryService extends LensJerseyTest {
       MediaType.APPLICATION_XML_TYPE));
 
     final QueryPlan plan = target.request()
-      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryPlan.class);
+      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+          new GenericType<SuccessResponse<QueryPlan>>() {}).getData();
     Assert.assertTrue(plan.isError());
     Assert.assertNotNull(plan.getErrorMsg());
     Assert.assertTrue(plan.getErrorMsg().contains("Invalid table alias or column reference 'NO_ID': "
@@ -529,8 +530,7 @@ public class TestQueryService extends LensJerseyTest {
     Assert.assertEquals(ctx.getConf().getProperties().get("my.property"), "myvalue");
 
     QueryHandle handle1 = target.path(pHandle.toString()).request()
-      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE),
-          new GenericType<SuccessResponse<QueryHandle>>() {}).getData();
+      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
 
     // Override query name
     confpart.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("queryName").build(), "testQueryName2"));
@@ -627,13 +627,13 @@ public class TestQueryService extends LensJerseyTest {
     Assert.assertEquals(ctx.getConf().getProperties().get("my.property"), "myvalue");
 
     QueryHandle handle1 = target.path(plan.getPrepareHandle().toString()).request()
-      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE),
-          new GenericType<SuccessResponse<QueryHandle>>() {}).getData();
+      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
 
     // do post once again
     QueryHandle handle2 = target.path(plan.getPrepareHandle().toString()).request()
       .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE),
-          new GenericType<SuccessResponse<QueryHandle>>() {}).getData();
+          new GenericType<SuccessResponse<QueryHandle>>() {
+          }).getData();
     Assert.assertNotEquals(handle1, handle2);
 
     LensQuery ctx1 = target().path("queryapi/queries").path(handle1.toString()).queryParam("sessionid", lensSessionId)
