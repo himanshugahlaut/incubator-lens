@@ -536,8 +536,7 @@ public class TestQueryService extends LensJerseyTest {
     confpart.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("queryName").build(), "testQueryName2"));
     // do post once again
     QueryHandle handle2 = target.path(pHandle.toString()).request()
-      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE),
-          new GenericType<SuccessResponse<QueryHandle>>() {}).getData();
+      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
     Assert.assertNotEquals(handle1, handle2);
 
     LensQuery ctx1 = target().path("queryapi/queries").path(handle1.toString()).queryParam("sessionid", lensSessionId)
@@ -631,9 +630,7 @@ public class TestQueryService extends LensJerseyTest {
 
     // do post once again
     QueryHandle handle2 = target.path(plan.getPrepareHandle().toString()).request()
-      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE),
-          new GenericType<SuccessResponse<QueryHandle>>() {
-          }).getData();
+      .post(Entity.entity(confpart, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
     Assert.assertNotEquals(handle1, handle2);
 
     LensQuery ctx1 = target().path("queryapi/queries").path(handle1.toString()).queryParam("sessionid", lensSessionId)
