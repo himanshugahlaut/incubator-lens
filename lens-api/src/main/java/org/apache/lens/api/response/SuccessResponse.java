@@ -25,13 +25,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.apache.lens.api.query.QueryHandle;
+import org.apache.lens.api.query.QuerySubmitResult;
 
 import lombok.Getter;
 
 @XmlRootElement
 @Getter
-@XmlSeeAlso({QueryHandle.class})
+@XmlSeeAlso({QuerySubmitResult.class})
 public class SuccessResponse<DATA> extends LensResponse {
 
   @XmlElement
