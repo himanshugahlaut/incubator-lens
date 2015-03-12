@@ -36,9 +36,9 @@ import lombok.NoArgsConstructor;
 /**
  * Instantiates a new query cost.
  *
- * @param estimatedExecTimeMillis
+ * @param estExecTimeMillis
  *          the estimated exec time millis
- * @param estimatedResourceUsage
+ * @param estResrcUsage
  *          the estimated resource usage
  */
 @AllArgsConstructor
@@ -46,21 +46,21 @@ import lombok.NoArgsConstructor;
  * Instantiates a new query cost.
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class QueryCost implements Comparable<QueryCost> {
+public class QueryCost extends QuerySubmitResult implements Comparable<QueryCost> {
 
   /**
    * The estimated exec time millis.
    */
   @XmlElement
   @Getter
-  private long estimatedExecTimeMillis;
+  private long estExecTimeMillis;
 
   /**
    * The estimated resource usage.
    */
   @XmlElement
   @Getter
-  private double estimatedResourceUsage;
+  private double estResrcUsage;
 
   /*
    * (non-Javadoc)
@@ -69,14 +69,14 @@ public class QueryCost implements Comparable<QueryCost> {
    */
   @Override
   public int compareTo(QueryCost other) {
-    if (estimatedExecTimeMillis == other.estimatedExecTimeMillis) {
-      if (estimatedResourceUsage == other.estimatedResourceUsage) {
+    if (estExecTimeMillis == other.estExecTimeMillis) {
+      if (estResrcUsage == other.estResrcUsage) {
         return 0;
       } else {
-        return (int) (estimatedResourceUsage - other.estimatedResourceUsage);
+        return (int) (estResrcUsage - other.estResrcUsage);
       }
     } else {
-      return (int) (estimatedExecTimeMillis - other.estimatedExecTimeMillis);
+      return (int) (estExecTimeMillis - other.estExecTimeMillis);
     }
   }
 }

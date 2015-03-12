@@ -1383,8 +1383,8 @@ public class TestQueryService extends LensJerseyTest {
     Assert.assertNotNull(result);
     Assert.assertFalse(result.isError());
     Assert.assertNotNull(result.getCost());
-    Assert.assertEquals(result.getCost().getEstimatedExecTimeMillis(), 1L);
-    Assert.assertEquals(result.getCost().getEstimatedResourceUsage(), 1.0);
+    Assert.assertEquals(result.getCost().getEstExecTimeMillis(), 1L);
+    Assert.assertEquals(result.getCost().getEstResrcUsage(), 1.0);
   }
 
   /**

@@ -179,6 +179,7 @@ public class QueryServiceResource {
 
     checkQuery(query);
     checkSessionId(sessionid);
+
     try {
       SubmitOp sop = null;
       try {
@@ -192,7 +193,7 @@ public class QueryServiceResource {
       QuerySubmitResult result = null;
       switch (sop) {
       case ESTIMATE:
-        result = queryServer.estimate(sessionid, query, conf);
+        result = queryServer.estimate(sessionid, query, conf).getCost();
         break;
       case EXECUTE:
         result = queryServer.executeAsync(sessionid, query, conf, queryName);

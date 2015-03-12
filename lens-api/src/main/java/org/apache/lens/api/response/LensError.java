@@ -16,20 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/*
- *
- */
-package org.apache.lens.api.query;
+package org.apache.lens.api.response;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import org.apache.commons.lang.StringUtils;
 
-/**
- * The Class QuerySubmitResult.
- */
-@XmlRootElement
-@XmlSeeAlso({QueryHandle.class, QueryPrepareHandle.class, QueryHandleWithResultSet.class,
-  org.apache.lens.api.query.QueryPlan.class, EstimateResult.class, QueryCost.class})
-public abstract class QuerySubmitResult {
+import static com.google.common.base.Preconditions.checkArgument;
 
+import lombok.Getter;
+
+public class LensError {
+
+  private final int code;
+  @Getter
+  private final String message;
+
+  public LensError(final int code, final String message) {
+
+    checkArgument(code > 0);
+    checkArgument(StringUtils.isNotBlank(message));
+
+    this.code = code;
+    this.message = message;
+  }
 }

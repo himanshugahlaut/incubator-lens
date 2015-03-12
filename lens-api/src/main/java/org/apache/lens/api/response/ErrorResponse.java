@@ -22,9 +22,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class ErrorResponse extends LensResponse {
 
-  private final Error error;
+  private final LensError error;
 
-  public ErrorResponse(final String apiVersion, final String id, final Error error) {
+  public ErrorResponse(final String apiVersion, final String id, final LensError error) {
     super(apiVersion, id);
     checkArgument(error != null);
     this.error = error;

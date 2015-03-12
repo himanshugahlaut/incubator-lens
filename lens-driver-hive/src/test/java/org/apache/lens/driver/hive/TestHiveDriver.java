@@ -625,8 +625,8 @@ public class TestHiveDriver {
     createTestTable("test_estimate");
     SessionState.setCurrentSessionState(ss);
     QueryCost cost = driver.estimate(createExplainContext("SELECT ID FROM test_estimate", conf));
-    Assert.assertEquals(cost.getEstimatedExecTimeMillis(), 1);
-    Assert.assertEquals(cost.getEstimatedResourceUsage(), 1.0);
+    Assert.assertEquals(cost.getEstExecTimeMillis(), 1);
+    Assert.assertEquals(cost.getEstResrcUsage(), 1.0);
   }
 
   @Test
@@ -635,8 +635,8 @@ public class TestHiveDriver {
     ExplainQueryContext ctx = createExplainContext("cube SELECT ID FROM test_cube", conf);
     ctx.setOlapQuery(true);
     QueryCost cost = driver.estimate(ctx);
-    Assert.assertEquals(cost.getEstimatedExecTimeMillis(), 1);
-    Assert.assertEquals(cost.getEstimatedResourceUsage(), 1.0);
+    Assert.assertEquals(cost.getEstExecTimeMillis(), 1);
+    Assert.assertEquals(cost.getEstResrcUsage(), 1.0);
   }
 
   @Test

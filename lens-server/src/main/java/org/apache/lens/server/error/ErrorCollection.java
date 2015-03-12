@@ -16,20 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/*
- *
- */
-package org.apache.lens.api.query;
+package org.apache.lens.server.error;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 
-/**
- * The Class QuerySubmitResult.
- */
-@XmlRootElement
-@XmlSeeAlso({QueryHandle.class, QueryPrepareHandle.class, QueryHandleWithResultSet.class,
-  org.apache.lens.api.query.QueryPlan.class, EstimateResult.class, QueryCost.class})
-public abstract class QuerySubmitResult {
+public interface ErrorCollection {
+
+  public String getErrorMessage(final LensErrorEnum errorEnum);
 
 }

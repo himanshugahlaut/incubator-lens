@@ -16,21 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
-
+package org.apache.lens.server.error;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class DetailedError<PAYLOAD> extends LensError {
+import org.apache.lens.api.response.LensError;
 
-  private final PAYLOAD payLoad;
+import org.apache.commons.collections.MapUtils;
 
-  public DetailedError(final int code, final String message, final PAYLOAD payload) {
+import com.google.common.collect.ImmutableMap;
 
-    super(code, message);
-    checkArgument(payload != null);
-    this.payLoad = payload;
+public class ImmutableErrorCollection implements ErrorCollection {
+  
+  private final ImmutableMap<LensErrorEnum,LensError> errors;
 
+  public ImmutableErrorCollection(final ImmutableMap<LensErrorEnum, LensError> errors) {
+
+    checkArgument(MapUtils.isNotEmpty(errors));
+
+    /* Map should have an entry for all LensErrorEnum */
+    for (LensErrorEnum errorEnum : LensErrorEnum.values()) {
+      checkArgument(errors.containsKey(errorEnum));
+    }
+
+    this.errors = errors;
   }
 
+  public String getErrorMessage(final LensErrorEnum errorEnum) {
+    return getLensError(errorEnum).getMessage();
+  }
+
+  private LensError getLensError(final LensErrorEnum errorEnum) {
+    return errors.get(errorEnum);
+  }
 }

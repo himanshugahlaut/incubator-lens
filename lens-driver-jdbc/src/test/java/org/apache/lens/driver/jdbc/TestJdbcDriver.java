@@ -238,8 +238,8 @@ public class TestJdbcDriver {
     insertData("estimate_test"); // Insert some data into table
     String query1 = "SELECT * FROM estimate_test"; // Select query against existing table
     QueryCost cost = driver.estimate(createExplainContext(query1, baseConf));
-    Assert.assertEquals(cost.getEstimatedExecTimeMillis(), 0);
-    Assert.assertEquals(cost.getEstimatedResourceUsage(), 0.0);
+    Assert.assertEquals(cost.getEstExecTimeMillis(), 0);
+    Assert.assertEquals(cost.getEstResrcUsage(), 0.0);
   }
 
   /**

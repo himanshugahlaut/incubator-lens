@@ -16,23 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
+package org.apache.lens.server.error;
 
-import org.apache.commons.lang.StringUtils;
 
-import static com.google.common.base.Preconditions.checkArgument;
+public class ErrorCollectionFactory {
 
-public class Error {
-
-  private final int code;
-  private final String message;
-
-  public Error(final int code, final String message) {
-
-    checkArgument(code > 0);
-    checkArgument(StringUtils.isNotBlank(message));
-
-    this.code = code;
-    this.message = message;
+  final ErrorCollection create(final String configFile) {
+    return null;
   }
 }
+
