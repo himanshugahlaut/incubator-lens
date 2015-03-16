@@ -28,7 +28,7 @@ public enum LensErrorCode {
     return this.code;
   }
 
-  public LensErrorCode valueOf(final int integerCode) {
+  public static LensErrorCode getLensErrorCode(final int integerCode) {
 
     for (LensErrorCode lensErrorCode : LensErrorCode.values()) {
       if (integerCode == lensErrorCode.getValue()) {

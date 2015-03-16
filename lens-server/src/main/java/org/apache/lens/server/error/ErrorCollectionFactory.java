@@ -35,12 +35,12 @@ public class ErrorCollectionFactory {
 
     Map<LensErrorCode, LensError> errorCollection = new HashMap<LensErrorCode, LensError>();
 
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+    for (final String propName : properties.stringPropertyNames()) {
 
-      String errorCode = (String) entry.getKey();
-      String errorMsg = (String) entry.getValue();
+      Integer errorCode = Integer.valueOf(propName);
+      String errorMsg = properties.getProperty(propName);
 
-      LensErrorCode lensErrorCode = LensErrorCode.valueOf(errorCode);
+      LensErrorCode lensErrorCode = LensErrorCode.getLensErrorCode(errorCode);
       LensError lensError = new LensError(lensErrorCode, errorMsg);
       errorCollection.put(lensErrorCode, lensError);
     }
