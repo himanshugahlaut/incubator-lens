@@ -231,12 +231,12 @@
       <testResource>
         <directory>${project.basedir}/conf</directory>
       </testResource>
-      <testResource>
+      <!--testResource>
         <directory>${project.basedir}/testdata</directory>
       </testResource>
       <testResource>
         <directory>${project.basedir}/src/test/resources</directory>
-      </testResource>
+      </testResource-->
     </testResources>
     <plugins>
       <plugin>
