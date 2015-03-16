@@ -18,9 +18,16 @@
  */
 package org.apache.lens.server.error;
 
+//import org.apache.lens.api.error.LensError;
+
+import org.apache.lens.api.error.LensErrorCode;
 
 public interface ErrorCollection {
+/*
+  public LensError getLensError(final LensErrorCode errorEnum);
 
-  public String getErrorMessage(final LensErrorEnum errorEnum);
+  public String getErrorMessage(final LensErrorCode errorEnum);*/
+
+  RuntimeException createLensServerException(final LensErrorCode errorEnum);
 
 }

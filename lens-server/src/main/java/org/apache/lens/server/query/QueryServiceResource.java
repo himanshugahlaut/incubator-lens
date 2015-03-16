@@ -31,11 +31,13 @@ import org.apache.lens.api.APIResult.Status;
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.LensException;
 import org.apache.lens.api.LensSessionHandle;
+import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.query.*;
 import org.apache.lens.api.response.SuccessResponse;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
+import org.apache.lens.server.error.ErrorCollection;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -58,6 +60,8 @@ public class QueryServiceResource {
   /** The query server. */
   private QueryExecutionService queryServer;
 
+  private ErrorCollection errorCollection;
+
   /**
    * Check session id.
    *
@@ -65,7 +69,7 @@ public class QueryServiceResource {
    */
   private void checkSessionId(LensSessionHandle sessionHandle) {
     if (sessionHandle == null) {
-      throw new BadRequestException("Invalid session handle");
+      throw errorCollection.createLensServerException(LensErrorCode.INVALID_SESSION_ID);
     }
   }
 
@@ -98,6 +102,7 @@ public class QueryServiceResource {
    */
   public QueryServiceResource() throws LensException {
     queryServer = (QueryExecutionService) LensServices.get().getService("query");
+    errorCollection = LensServices.getErrorCollection();
   }
 
   QueryExecutionService getQueryServer() {

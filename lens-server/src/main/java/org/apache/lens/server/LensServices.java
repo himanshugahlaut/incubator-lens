@@ -30,6 +30,8 @@ import java.util.*;
 import org.apache.lens.server.api.ServiceProvider;
 import org.apache.lens.server.api.events.LensEventService;
 import org.apache.lens.server.api.metrics.MetricsService;
+import org.apache.lens.server.error.ErrorCollection;
+import org.apache.lens.server.error.ErrorCollectionFactory;
 import org.apache.lens.server.metrics.MetricsServiceImpl;
 import org.apache.lens.server.session.LensSessionImpl;
 import org.apache.lens.server.stats.StatisticsService;
@@ -68,6 +70,8 @@ public class LensServices extends CompositeService implements ServiceProvider {
   /** The instance. */
   private static LensServices instance = new LensServices(LENS_SERVICES_NAME);
 
+  private static final String LENS_ERROR_PROPERTIES_FILE = "lens-errors.properties";
+
   /** The conf. */
   private HiveConf conf;
 
@@ -102,6 +106,9 @@ public class LensServices extends CompositeService implements ServiceProvider {
 
   /* Lock for synchronizing persistence of LensServices state */
   private final Object statePersistenceLock = new Object();
+
+  @Getter
+  private static ErrorCollection errorCollection;
 
   /**
    * The Enum SERVICE_MODE.
@@ -141,7 +148,14 @@ public class LensServices extends CompositeService implements ServiceProvider {
   @SuppressWarnings("unchecked")
   @Override
   public synchronized void init(HiveConf hiveConf) {
+
     if (getServiceState() == STATE.NOTINITED) {
+
+      try {
+        errorCollection = new ErrorCollectionFactory().create(LENS_ERROR_PROPERTIES_FILE);
+      } catch (IOException e) {
+        throw new RuntimeException("Could not create error collection.", e);
+      }
       conf = hiveConf;
       conf.addResource("lensserver-default.xml");
       conf.addResource("lens-site.xml");

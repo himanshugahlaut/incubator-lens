@@ -16,19 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.server.error;
+package org.apache.lens.api.pagination;
 
+import java.util.Collection;
 
-public enum LensErrorEnum {
+public class PaginatedCollection<ITEM> {
 
-  INVALID_SESSION_ID(1003);
+  private  int itemsPerPage;
+  private  int startIndex;
+  private  int currentItemCount;
+  private  int totalItems;
+  private  int totalPages;
+  private  int pageIndex;
+  private Collection<ITEM> items;
 
-  public int getValue() {
-    return this.code;
+  public PaginatedCollection(final Collection<ITEM> items) {
+    this.items = items;
   }
 
-  private LensErrorEnum(final int code) {
-    this.code = code;
-  }
-  private final int code;
 }

@@ -16,21 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
+package org.apache.lens.api.error;
 
+import org.apache.commons.lang.StringUtils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class DetailedError<PAYLOAD> extends LensError {
+import lombok.Getter;
 
-  private final PAYLOAD payLoad;
+public class LensError {
 
-  public DetailedError(final int code, final String message, final PAYLOAD payload) {
+  private final LensErrorCode code;
+  @Getter
+  private final String message;
 
-    super(code, message);
-    checkArgument(payload != null);
-    this.payLoad = payload;
+  public LensError(final LensErrorCode code, final String message) {
 
+    checkArgument(code != null);
+    checkArgument(StringUtils.isNotBlank(message));
+
+    this.code = code;
+    this.message = message;
   }
 
 }

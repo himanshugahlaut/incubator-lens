@@ -20,6 +20,8 @@ package org.apache.lens.api.response;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import org.apache.lens.api.error.LensError;
+
 public class ErrorResponse extends LensResponse {
 
   private final LensError error;

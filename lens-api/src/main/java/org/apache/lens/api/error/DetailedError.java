@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
+package org.apache.lens.api.error;
 
-import java.util.Collection;
 
-public class PaginatedCollection<ITEM> {
+import static com.google.common.base.Preconditions.checkArgument;
 
-  private  int itemsPerPage;
-  private  int startIndex;
-  private  int currentItemCount;
-  private  int totalItems;
-  private  int totalPages;
-  private  int pageIndex;
-  private Collection<ITEM> items;
+public class DetailedError<PAYLOAD> extends LensError {
 
-  public PaginatedCollection(final Collection<ITEM> items) {
-    this.items = items;
+  private final PAYLOAD payLoad;
+
+  public DetailedError(final LensErrorCode code, final String message, final PAYLOAD payload) {
+
+    super(code, message);
+    checkArgument(payload != null);
+    this.payLoad = payload;
+
   }
+
 }

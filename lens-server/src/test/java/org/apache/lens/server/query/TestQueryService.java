@@ -1542,4 +1542,27 @@ public class TestQueryService extends LensJerseyTest {
       "lens.MethodMetricGauge.TestQueryService-testEstimateGauges-ALL_DRIVER_ESTIMATES",
       "lens.MethodMetricGauge.TestQueryService-testEstimateGauges-DRIVER_SELECTION")));
   }
+
+  @Test
+  public void testEstimateQueryErrorResponses() throws InterruptedException {
+
+    final WebTarget target = target().path("queryapi/queries");
+    final FormDataMultiPart mp = new FormDataMultiPart();
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), lensSessionId,
+        MediaType.APPLICATION_XML_TYPE));
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), "select ID from " + TEST_TABLE));
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), "estimate"));
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("conf").fileName("conf").build(), new LensConf(),
+        MediaType.APPLICATION_XML_TYPE));
+
+    final EstimateResult result = target.request()
+        .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+            new GenericType<SuccessResponse<EstimateResult>>() {}).getData();
+    Assert.assertNotNull(result);
+    Assert.assertFalse(result.isError());
+    Assert.assertNotNull(result.getCost());
+    Assert.assertEquals(result.getCost().getEstExecTimeMillis(), 1L);
+    Assert.assertEquals(result.getCost().getEstResrcUsage(), 1.0);
+  }
+
 }

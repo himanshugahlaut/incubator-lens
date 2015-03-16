@@ -20,33 +20,55 @@ package org.apache.lens.server.error;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import org.apache.lens.api.response.LensError;
+import org.apache.lens.api.error.LensError;
+import org.apache.lens.api.error.LensErrorCode;
 
 import org.apache.commons.collections.MapUtils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 public class ImmutableErrorCollection implements ErrorCollection {
-  
-  private final ImmutableMap<LensErrorEnum,LensError> errors;
 
-  public ImmutableErrorCollection(final ImmutableMap<LensErrorEnum, LensError> errors) {
+  private final ImmutableMap<LensErrorCode, LensError> errors;
 
-    checkArgument(MapUtils.isNotEmpty(errors));
+  public ImmutableErrorCollection(final ImmutableMap<LensErrorCode, LensError> errors) {
 
-    /* Map should have an entry for all LensErrorEnum */
-    for (LensErrorEnum errorEnum : LensErrorEnum.values()) {
+    Preconditions.checkArgument(MapUtils.isNotEmpty(errors));
+
+    /* Map should have a mapping for every LensErrorCode */
+    for (LensErrorCode errorEnum : LensErrorCode.values()) {
       checkArgument(errors.containsKey(errorEnum));
     }
 
     this.errors = errors;
   }
 
-  public String getErrorMessage(final LensErrorEnum errorEnum) {
-    return getLensError(errorEnum).getMessage();
+  @Override public RuntimeException createLensServerException(final LensErrorCode errorCode) {
+
+    final LensError lensError = getLensError(errorCode);
+    RuntimeException lensServerException = null;
+
+    switch (errorCode) {
+    case INVALID_SESSION_ID:
+      lensServerException = new LensBadRequestException(lensError);
+    default:
+      lensServerException = new UnsupportedOperationException(
+          "This should never happen. " + "Please handle all possible error codes in switch block");
+    }
+
+    return lensServerException;
   }
 
-  private LensError getLensError(final LensErrorEnum errorEnum) {
-    return errors.get(errorEnum);
+  //@Override
+  private String getErrorMessage(final LensErrorCode errorCode) {
+    return getLensError(errorCode).getMessage();
   }
+
+  //@Override
+  private LensError getLensError(final LensErrorCode errorCode) {
+    checkArgument(errorCode != null);
+    return errors.get(errorCode);
+  }
+
 }

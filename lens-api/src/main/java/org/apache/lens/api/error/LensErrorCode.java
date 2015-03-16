@@ -16,26 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
+package org.apache.lens.api.error;
 
-import org.apache.commons.lang.StringUtils;
+public enum LensErrorCode {
 
-import static com.google.common.base.Preconditions.checkArgument;
+  USER_NAME_NOT_PROVIDED(1001),
+  INVAID_USERNAME_OR_PASSWORD(1002),
+  INVALID_SESSION_ID(1003);
 
-import lombok.Getter;
+  public int getValue() {
+    return this.code;
+  }
 
-public class LensError {
+  public LensErrorCode valueOf(final int integerCode) {
+
+    for (LensErrorCode lensErrorCode : LensErrorCode.values()) {
+      if (integerCode == lensErrorCode.getValue()) {
+        return lensErrorCode;
+      }
+    }
+
+    throw new IllegalArgumentException("No valid enum constant found for input integer code: " + integerCode);
+  }
+
+  private LensErrorCode(final int code) {
+    this.code = code;
+  }
 
   private final int code;
-  @Getter
-  private final String message;
 
-  public LensError(final int code, final String message) {
-
-    checkArgument(code > 0);
-    checkArgument(StringUtils.isNotBlank(message));
-
-    this.code = code;
-    this.message = message;
-  }
 }
