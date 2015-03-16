@@ -227,6 +227,17 @@
   </dependencies>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/conf</directory>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/testdata</directory>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
