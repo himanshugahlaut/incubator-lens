@@ -31,13 +31,15 @@ import org.apache.lens.api.APIResult.Status;
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.LensException;
 import org.apache.lens.api.LensSessionHandle;
+import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.query.*;
 import org.apache.lens.api.response.SuccessResponse;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
-import org.apache.lens.server.error.ErrorCollection;
+import org.apache.lens.server.error.model.ErrorCollection;
+import org.apache.lens.server.error.model.LensSessionIdNotProvidedException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -69,7 +71,19 @@ public class QueryServiceResource {
    */
   private void checkSessionId(LensSessionHandle sessionHandle) {
     if (sessionHandle == null) {
-      throw errorCollection.createLensServerException(LensErrorCode.INVALID_SESSION_ID);
+      throw new BadRequestException("something");
+    }
+  }
+
+  private void checkSessionId(LensSessionHandle sessionHandle, final String apiVersion, final String id) {
+
+    if (sessionHandle == null) {
+
+      LensSessionIdNotProvidedException e = new LensSessionIdNotProvidedException();
+      LensError lensError = errorCollection.getLensError(e.getCode());
+      e.buildResponse(apiVersion,id,lensError);
+      throw e;
+
     }
   }
 
@@ -181,9 +195,18 @@ public class QueryServiceResource {
     @DefaultValue("") @FormDataParam("queryName") String queryName) {
 
     final String id = randomUUID().toString();
+    final String apiVersion = "1.0";
 
     checkQuery(query);
-    checkSessionId(sessionid);
+
+    try {
+      checkSessionId(sessionid, apiVersion, id);
+    } catch (final LensSessionIdNotProvidedException e) {
+      LensErrorCode errorCode = e.getCode();
+      LensError lensError = errorCollection.getLensError(errorCode);
+      e.buildResponse(apiVersion, id, lensError);
+      throw e;
+    }
 
     try {
       SubmitOp sop = null;
@@ -212,10 +235,7 @@ public class QueryServiceResource {
       default:
         throw new BadRequestException("Invalid operation type: " + operation + submitClue);
       }
-
-      final String apiVersion = "1.0";
       return new SuccessResponse<QuerySubmitResult>(apiVersion, id, result);
-
     } catch (LensException e) {
       throw new WebApplicationException(e);
     }

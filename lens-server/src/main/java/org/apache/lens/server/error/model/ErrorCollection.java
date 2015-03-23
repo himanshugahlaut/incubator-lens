@@ -16,33 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.response;
-
-import static com.google.common.base.Preconditions.checkArgument;
+package org.apache.lens.server.error.model;
 
 import org.apache.lens.api.error.LensError;
+import org.apache.lens.api.error.LensErrorCode;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import lombok.AccessLevel;
-import lombok.Getter;
+public interface ErrorCollection {
 
-@XmlRootElement
-public class ErrorResponse extends LensResponse {
+  public LensError getLensError(final LensErrorCode errorEnum);
 
-  @XmlElement
-  private LensError error;
-
-  ErrorResponse() {
-
-  }
-  public ErrorResponse(final String apiVersion, final String id, final LensError error) {
-    super(apiVersion, id);
-    checkArgument(error != null);
-    this.error = error;
-  }
-
-  public boolean isLensErrorEqual(final LensError second) {
-    return error.equals(second);
-  }
 }

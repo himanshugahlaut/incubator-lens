@@ -18,11 +18,20 @@
  */
 package org.apache.lens.api.error;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType
+@XmlEnum(Integer.class)
 public enum LensErrorCode {
 
+  @XmlEnumValue("1001")
   USER_NAME_NOT_PROVIDED(1001),
+  @XmlEnumValue("1002")
   INVAID_USERNAME_OR_PASSWORD(1002),
-  INVALID_SESSION_ID(1003);
+  @XmlEnumValue("1003")
+  SESSION_ID_NOT_PROVIDED(1003);
 
   public int getValue() {
     return this.code;

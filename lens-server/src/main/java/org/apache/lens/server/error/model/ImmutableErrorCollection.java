@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.server.error;
+package org.apache.lens.server.error.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -25,7 +25,6 @@ import org.apache.lens.api.error.LensErrorCode;
 
 import org.apache.commons.collections.MapUtils;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 public class ImmutableErrorCollection implements ErrorCollection {
@@ -34,7 +33,7 @@ public class ImmutableErrorCollection implements ErrorCollection {
 
   public ImmutableErrorCollection(final ImmutableMap<LensErrorCode, LensError> errors) {
 
-    Preconditions.checkArgument(MapUtils.isNotEmpty(errors));
+    checkArgument(MapUtils.isNotEmpty(errors));
 
     /* Map should have a mapping for every LensErrorCode */
     for (LensErrorCode errorEnum : LensErrorCode.values()) {
@@ -44,29 +43,8 @@ public class ImmutableErrorCollection implements ErrorCollection {
     this.errors = errors;
   }
 
-  @Override public RuntimeException createLensServerException(final LensErrorCode errorCode) {
-
-    final LensError lensError = getLensError(errorCode);
-    RuntimeException lensServerException = null;
-
-    switch (errorCode) {
-    case INVALID_SESSION_ID:
-      lensServerException = new LensBadRequestException(lensError);
-    default:
-      lensServerException = new UnsupportedOperationException(
-          "This should never happen. " + "Please handle all possible error codes in switch block");
-    }
-
-    return lensServerException;
-  }
-
-  //@Override
-  private String getErrorMessage(final LensErrorCode errorCode) {
-    return getLensError(errorCode).getMessage();
-  }
-
-  //@Override
-  private LensError getLensError(final LensErrorCode errorCode) {
+  @Override
+  public LensError getLensError(final LensErrorCode errorCode) {
     checkArgument(errorCode != null);
     return errors.get(errorCode);
   }

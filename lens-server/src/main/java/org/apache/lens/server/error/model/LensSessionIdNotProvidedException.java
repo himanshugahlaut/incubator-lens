@@ -16,18 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.server.error;
+package org.apache.lens.server.error.model;
 
-//import org.apache.lens.api.error.LensError;
-
+import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
+import org.apache.lens.api.response.ErrorResponse;
 
-public interface ErrorCollection {
-/*
-  public LensError getLensError(final LensErrorCode errorEnum);
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-  public String getErrorMessage(final LensErrorCode errorEnum);*/
+@Getter
+public class LensSessionIdNotProvidedException extends RuntimeException {
 
-  RuntimeException createLensServerException(final LensErrorCode errorEnum);
+  private final LensErrorCode code = LensErrorCode.SESSION_ID_NOT_PROVIDED;
+  private ErrorResponse response;
+
+  public void buildResponse(final String apiVersion, final String id, final LensError lensError) {
+    response = new ErrorResponse(apiVersion, id, lensError);
+  }
 
 }

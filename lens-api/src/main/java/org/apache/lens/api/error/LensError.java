@@ -22,14 +22,23 @@ import org.apache.commons.lang.StringUtils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import javax.xml.bind.annotation.XmlElement;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode
 public class LensError {
 
-  private final LensErrorCode code;
-  @Getter
-  private final String message;
+  @XmlElement
+  private LensErrorCode code;
 
+  @XmlElement
+  private String message;
+
+  LensError() {
+
+  }
   public LensError(final LensErrorCode code, final String message) {
 
     checkArgument(code != null);

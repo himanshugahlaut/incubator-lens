@@ -18,13 +18,33 @@
  */
 package org.apache.lens.server.query;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import com.google.common.base.Optional;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.lens.api.LensConf;
+import org.apache.lens.api.error.LensError;
+import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.query.EstimateResult;
+import org.apache.lens.api.query.QueryCost;
+import org.apache.lens.api.query.QueryHandle;
+import org.apache.lens.api.response.ErrorResponse;
+import org.apache.lens.api.response.SuccessResponse;
+import org.apache.lens.server.LensServices;
+import org.apache.lens.server.error.assembler.LensSessionIdNotProvidedExceptionMapper;
+import org.apache.lens.server.error.model.LensSessionIdNotProvidedException;
+
+import org.apache.hadoop.hive.conf.HiveConf;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -32,7 +52,11 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.test.JerseyTestNg;
+import org.glassfish.jersey.test.TestProperties;
+import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
+import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,17 +64,15 @@ import org.testng.annotations.Test;
 public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
 
 
-  /*@BeforeTest
-  public void setUp() throws Exception {
-    super.setUp();
-    Wiser wiser = new Wiser();
-    wiser.setHostname("localhost");
-    wiser.setPort(25000);
-  }*/
-
   @Override
   protected Application configure() {
-    return new ResourceConfig(QueryServiceResource.class, MultiPartFeature.class);
+
+    enable(TestProperties.LOG_TRAFFIC);
+    enable(TestProperties.DUMP_ENTITY);
+
+    return new ResourceConfig(QueryServiceResource.class, MultiPartFeature.class,
+        LensSessionIdNotProvidedExceptionMapper.class);
+
   }
 
   @Override
@@ -58,28 +80,45 @@ public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
     config.register(MultiPartFeature.class);
   }
 
+  @Override
+  protected TestContainerFactory getTestContainerFactory() {
+    return new InMemoryTestContainerFactory();
+  }
+
   @Test
-  public void test() {
+  public void testErrorResponseWhenSessionIdNotProvided() throws InterruptedException {
 
+    /* Setup */
+    new LensServices("test").initializeErrorCollection();
+
+    /* Prepare estimate request without a session id */
     final WebTarget target = target("queryapi/queries");
+    final FormDataMultiPart mp = createFormDataMultiPart(Optional.<String>absent(),"select ID from nothing","estimate",
+        new LensConf());
 
-    // estimate native query
-    final FormDataMultiPart mp = new FormDataMultiPart();
-    mp.bodyPart(
-        new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), "", MediaType.APPLICATION_XML_TYPE));
-    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), "select ID from test_table"));
-    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), "estimate"));
-    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("conf").fileName("conf").build(), new LensConf(),
-        MediaType.APPLICATION_XML_TYPE));
+    /* Execute request */
+    final ErrorResponse response = target.request(MediaType.APPLICATION_XML)
+            .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE)).readEntity(ErrorResponse.class);
 
-    final EstimateResult result = target.request()
-        .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), EstimateResult.class);
-
-    Assert.assertNotNull(result);
-    Assert.assertFalse(result.isError());
-    Assert.assertNotNull(result.getCost());
-    Assert.assertEquals(result.getCost().getEstimatedExecTimeMillis(), 1L);
-    Assert.assertEquals(result.getCost().getEstimatedResourceUsage(), 1.0);
+    /* Validate returned error in response */
+    final LensError expectedLensError = new LensError(LensErrorCode.SESSION_ID_NOT_PROVIDED,"Session id not provided. "
+        + "Please provide a session id.");
+    assertFalse(response.isLensErrorEqual(expectedLensError));
 
   }
+
+  private FormDataMultiPart createFormDataMultiPart(final Optional<String> sessionId, final String query, final String operation, final LensConf lensConf) {
+
+    final FormDataMultiPart mp = new FormDataMultiPart();
+    if (sessionId.isPresent()) {
+      mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), sessionId.get(), MediaType.APPLICATION_XML_TYPE));
+    }
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), query));
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), operation));
+    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("conf").fileName("conf").build(), lensConf,
+        MediaType.APPLICATION_XML_TYPE));
+    return mp;
+
+  }
+
 }

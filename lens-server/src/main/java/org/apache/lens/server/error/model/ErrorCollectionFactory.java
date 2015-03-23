@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.server.error;
+package org.apache.lens.server.error.model;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -30,8 +30,8 @@ import java.util.*;
 import org.apache.lens.server.api.ServiceProvider;
 import org.apache.lens.server.api.events.LensEventService;
 import org.apache.lens.server.api.metrics.MetricsService;
-import org.apache.lens.server.error.ErrorCollection;
-import org.apache.lens.server.error.ErrorCollectionFactory;
+import org.apache.lens.server.error.model.ErrorCollection;
+import org.apache.lens.server.error.model.ErrorCollectionFactory;
 import org.apache.lens.server.metrics.MetricsServiceImpl;
 import org.apache.lens.server.session.LensSessionImpl;
 import org.apache.lens.server.stats.StatisticsService;
@@ -48,6 +48,7 @@ import org.apache.hive.service.CompositeService;
 import org.apache.hive.service.Service;
 import org.apache.hive.service.cli.CLIService;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -151,11 +152,7 @@ public class LensServices extends CompositeService implements ServiceProvider {
 
     if (getServiceState() == STATE.NOTINITED) {
 
-      try {
-        errorCollection = new ErrorCollectionFactory().create(LENS_ERROR_PROPERTIES_FILE);
-      } catch (IOException e) {
-        throw new RuntimeException("Could not create error collection.", e);
-      }
+      initializeErrorCollection();
       conf = hiveConf;
       conf.addResource("lensserver-default.xml");
       conf.addResource("lens-site.xml");
@@ -408,5 +405,14 @@ public class LensServices extends CompositeService implements ServiceProvider {
 
   public List<LensService> getLensServices() {
     return lensServices;
+  }
+
+  @VisibleForTesting
+  public void initializeErrorCollection() {
+    try {
+      errorCollection = new ErrorCollectionFactory().create(LENS_ERROR_PROPERTIES_FILE);
+    } catch (IOException e) {
+      throw new RuntimeException("Could not create error collection.", e);
+    }
   }
 }
