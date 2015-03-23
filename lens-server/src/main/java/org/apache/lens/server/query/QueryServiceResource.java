@@ -19,9 +19,12 @@
 package org.apache.lens.server.query;
 
 import static java.util.UUID.randomUUID;
+import static org.apache.lens.api.query.SubmitOp.*;
 
 import java.util.List;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,6 +34,7 @@ import org.apache.lens.api.APIResult.Status;
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.LensException;
 import org.apache.lens.api.LensSessionHandle;
+import org.apache.lens.api.error.DetailedError;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.query.*;
@@ -40,6 +44,7 @@ import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.model.ErrorCollection;
 import org.apache.lens.server.error.model.LensRuntimeException;
+import org.apache.lens.server.error.model.UnSupportedQuerySubmitOpException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -69,17 +74,38 @@ public class QueryServiceResource {
    *
    * @param sessionHandle the session handle
    */
-  private void checkSessionId(LensSessionHandle sessionHandle) {
+  private void checkSessionId(final LensSessionHandle sessionHandle) {
     if (sessionHandle == null) {
       throw new BadRequestException("something");
     }
   }
 
-  private void checkSessionId(LensSessionHandle sessionHandle, final String apiVersion, final String id) {
+  private void checkSessionId(final LensSessionHandle sessionHandle, final String apiVersion, final String id) {
 
     if (sessionHandle == null) {
       throwLensRuntimeException(LensErrorCode.SESSION_ID_NOT_PROVIDED,apiVersion,id);
     }
+  }
+
+  private SubmitOp checkAndGetQuerySubmitOperation(final String operation, final String apiVersion, final String id) {
+
+      try {
+
+        return SubmitOp.valueOf(operation.toUpperCase());
+
+      } catch (IllegalArgumentException e) {
+
+        LensError lensError = errorCollection.getLensError(LensErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION);
+
+        final ImmutableSet<SubmitOp> supportedOps =
+            Sets.immutableEnumSet(ESTIMATE, EXECUTE, EXPLAIN, EXECUTE_WITH_TIMEOUT);
+
+        DetailedError<ImmutableSet<SubmitOp>> lensDetailedError =
+            new DetailedError<ImmutableSet<SubmitOp>>(lensError.getLensErrorCode(),lensError.getMessage(),supportedOps);
+
+        throw new LensRuntimeException(LensErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION).setApiVersion(apiVersion)
+            .setId(id).setLensError(lensDetailedError);
+      }
   }
 
   /**
@@ -102,12 +128,7 @@ public class QueryServiceResource {
   private void throwLensRuntimeException(final LensErrorCode code, final String apiVersion, final String id) {
 
     LensError lensError = errorCollection.getLensError(code);
-
-    LensRuntimeException e = new LensRuntimeException(code);
-    e.setApiVersion(apiVersion);
-    e.setId(id);
-    e.setLensError(lensError);
-
+    LensRuntimeException e = new LensRuntimeException(code).setApiVersion(apiVersion).setId(id).setLensError(lensError);
     throw e;
   }
 
@@ -212,17 +233,8 @@ public class QueryServiceResource {
 
     checkQuery(query,apiVersion,id);
     checkSessionId(sessionid, apiVersion, id);
-
+    SubmitOp sop = checkAndGetQuerySubmitOperation(operation,apiVersion,id);
     try {
-      SubmitOp sop = null;
-      try {
-        sop = SubmitOp.valueOf(operation.toUpperCase());
-      } catch (IllegalArgumentException e) {
-        throw new BadRequestException(e);
-      }
-      if (sop == null) {
-        throw new BadRequestException("Invalid operation type: " + operation + submitClue);
-      }
       QuerySubmitResult result = null;
       switch (sop) {
       case ESTIMATE:

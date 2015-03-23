@@ -28,10 +28,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @EqualsAndHashCode
+@Getter(AccessLevel.PUBLIC)
 public class LensError {
 
   @XmlElement
-  private LensErrorCode code;
+  private LensErrorCode lensErrorCode;
 
   @XmlElement
   private String message;
@@ -39,13 +40,12 @@ public class LensError {
   LensError() {
 
   }
-  public LensError(final LensErrorCode code, final String message) {
+  public LensError(final LensErrorCode lensErrorCode, final String message) {
 
-    checkArgument(code != null);
+    checkArgument(lensErrorCode != null);
     checkArgument(StringUtils.isNotBlank(message));
 
-    this.code = code;
+    this.lensErrorCode = lensErrorCode;
     this.message = message;
   }
-
 }

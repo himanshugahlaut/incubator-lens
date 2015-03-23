@@ -21,14 +21,15 @@ package org.apache.lens.api.error;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import lombok.NonNull;
+
 public class DetailedError<PAYLOAD> extends LensError {
 
   private final PAYLOAD payLoad;
 
-  public DetailedError(final LensErrorCode code, final String message, final PAYLOAD payload) {
+  public DetailedError(final LensErrorCode code, final String message,@NonNull final PAYLOAD payload) {
 
     super(code, message);
-    checkArgument(payload != null);
     this.payLoad = payload;
 
   }

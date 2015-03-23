@@ -28,6 +28,8 @@ public enum LensErrorCode {
 
   @XmlEnumValue("1003")
   SESSION_ID_NOT_PROVIDED(1003),
+  @XmlEnumValue("1007")
+  UNSUPPORTED_QUERY_SUBMIT_OPERATION(1007),
   @XmlEnumValue("1015")
   NULL_OR_EMPTY_OR_BLANK_QUERY(1015);
 

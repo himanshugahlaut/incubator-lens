@@ -18,9 +18,13 @@
  */
 package org.apache.lens.server.error.model;
 
+import static jersey.repackaged.com.google.common.base.Preconditions.checkArgument;
+
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.response.ErrorResponse;
+
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.*;
 
@@ -36,22 +40,33 @@ public class LensRuntimeException extends RuntimeException {
     this.code = code;
   }
 
-  public void setApiVersion(@NonNull final String apiVersion) {
+  public LensRuntimeException setApiVersion(final String apiVersion) {
+
+    checkArgument(StringUtils.isNotBlank(apiVersion));
+
     this.apiVersion = apiVersion;
     this.response = null;
+    return this;
   }
 
-  public void setId(@NonNull final String id) {
+  public LensRuntimeException setId(final String id) {
+
+    checkArgument(StringUtils.isNotBlank(apiVersion));
+
     this.id = id;
     this.response = null;
+    return this;
   }
 
-  public void setLensError(@NonNull final LensError lensError) {
+  public LensRuntimeException setLensError(@NonNull final LensError lensError) {
+
     this.lensError = lensError;
     this.response = null;
+    return this;
   }
 
   public ErrorResponse getResponse() {
+
     if (response == null) {
       response = new ErrorResponse(apiVersion,id,lensError);
     }

@@ -19,6 +19,7 @@
 package org.apache.lens.server.error.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
@@ -38,7 +39,8 @@ public class ImmutableErrorCollection implements ErrorCollection {
 
     /* Map should have a mapping for every LensErrorCode */
     for (LensErrorCode errorEnum : LensErrorCode.values()) {
-      checkArgument(errors.containsKey(errorEnum));
+      checkState(errors.containsKey(errorEnum),"Map does not contain mapping for lensErrorCode: %s",
+          errorEnum.getValue());
     }
 
     this.errors = errors;

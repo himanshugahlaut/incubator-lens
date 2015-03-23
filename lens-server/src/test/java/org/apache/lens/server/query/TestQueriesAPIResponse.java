@@ -65,7 +65,9 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
   private static final Optional<LensSessionHandle> OPTIONAL_ABSENT_LENS_SESSION_HANDLE =
       Optional.<LensSessionHandle> absent();
 
-  private static final String MOCK_OPERATION = "mock-operation";
+  private static final Optional<String> OPTIONAL_ESTIMATE_OPERATION = Optional.of("estimate");
+  private static final Optional<String> OPTIONAL_INVALID_OPERATION = Optional.of("invalid-operation");
+  private static final Optional<String> OPTIONAL_ABSENT_OPERATION = Optional.<String> absent();
 
   @Override
   protected Application configure() {
@@ -93,24 +95,28 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
     return new Object[][] {
 
         /* Test Error Response when session id is absent */
-        {OPTIONAL_ABSENT_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, LensErrorCode.SESSION_ID_NOT_PROVIDED, "Session id "
+        {OPTIONAL_ABSENT_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_ESTIMATE_OPERATION, LensErrorCode.SESSION_ID_NOT_PROVIDED, "Session id "
             + "not provided. Please provide a session id."},
 
         /* Test Error Response when query is absent */
-        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_ABSENT_QUERY, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
+        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_ABSENT_QUERY, OPTIONAL_ESTIMATE_OPERATION, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
+            + "is not provided, or it is empty or blank. Please provide a valid query."},
+
+        /* Test Error Response when invalid operation is submitted */
+        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_INVALID_OPERATION, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
             + "is not provided, or it is empty or blank. Please provide a valid query."}};
   }
 
   @Test(dataProvider = "dpTestErrorResponse")
   public void testErrorResponse(final Optional<LensSessionHandle> lensSessionHandle, final Optional<String> query,
-      final LensErrorCode expectedCode, final String expectedErrorMsg) throws InterruptedException {
+      final Optional<String> operation, final LensErrorCode expectedCode, final String expectedErrorMsg) throws InterruptedException {
 
     /* Setup */
     new LensServices(MOCK_LENS_SERVICES_NAME).initializeErrorCollection();
 
     /* Prepare a request with given input */
     final WebTarget target = target(PATH);
-    final FormDataMultiPart mp = createFormDataMultiPart(lensSessionHandle, query, MOCK_OPERATION,
+    final FormDataMultiPart mp = createFormDataMultiPart(lensSessionHandle, query, OPTIONAL_ESTIMATE_OPERATION,
         new LensConf());
 
     /* Execute request */
@@ -123,8 +129,12 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
 
   }
 
+  private void testErrorResponse() {
+    
+  }
+
   private FormDataMultiPart createFormDataMultiPart(final Optional<LensSessionHandle> sessionId, final Optional<String> query,
-      final String operation, final LensConf lensConf) {
+      final Optional<String> operation, final LensConf lensConf) {
 
     final FormDataMultiPart mp = new FormDataMultiPart();
 
@@ -136,7 +146,9 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
     if (query.isPresent()) {
       mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), query.get()));
     }
-    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), operation));
+    if (operation.isPresent()) {
+      mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), operation.get()));
+    }
     mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("conf").fileName("conf").build(), lensConf,
         MediaType.APPLICATION_XML_TYPE));
     return mp;
