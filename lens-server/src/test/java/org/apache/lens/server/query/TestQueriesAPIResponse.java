@@ -22,29 +22,21 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.UUID;
+
 import com.google.common.base.Optional;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.lens.api.LensConf;
+import org.apache.lens.api.LensSessionHandle;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
-import org.apache.lens.api.query.EstimateResult;
-import org.apache.lens.api.query.QueryCost;
-import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.api.response.ErrorResponse;
-import org.apache.lens.api.response.SuccessResponse;
 import org.apache.lens.server.LensServices;
-import org.apache.lens.server.error.assembler.LensSessionIdNotProvidedExceptionMapper;
-import org.apache.lens.server.error.model.LensSessionIdNotProvidedException;
-
-import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.lens.server.error.assembler.LensRuntimeExceptionMapper;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -52,17 +44,28 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.test.JerseyTestNg;
 import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 @Test
-public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
+public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
 
+  private static final String MOCK_LENS_SERVICES_NAME = "test-lens-services";
+  private static final String PATH = "queryapi/queries";
+
+  private static final Optional<String> OPTIONAL_MOCK_QUERY = Optional.of("mock-query");
+  private static final Optional<String> OPTIONAL_ABSENT_QUERY = Optional.<String> absent();
+
+  private static final Optional<LensSessionHandle> OPTIONAL_MOCK_LENS_SESSION_HANDLE =
+      Optional.of(new LensSessionHandle(UUID.randomUUID(),UUID.randomUUID()));
+  private static final Optional<LensSessionHandle> OPTIONAL_ABSENT_LENS_SESSION_HANDLE =
+      Optional.<LensSessionHandle> absent();
+
+  private static final String MOCK_OPERATION = "mock-operation";
 
   @Override
   protected Application configure() {
@@ -71,7 +74,7 @@ public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
     enable(TestProperties.DUMP_ENTITY);
 
     return new ResourceConfig(QueryServiceResource.class, MultiPartFeature.class,
-        LensSessionIdNotProvidedExceptionMapper.class);
+        LensRuntimeExceptionMapper.class);
 
   }
 
@@ -85,15 +88,29 @@ public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
     return new InMemoryTestContainerFactory();
   }
 
-  @Test
-  public void testErrorResponseWhenSessionIdNotProvided() throws InterruptedException {
+  @DataProvider(name="dpTestErrorResponse", parallel = true)
+  public Object[][] dpTestErrorResponse() {
+    return new Object[][] {
+
+        /* Test Error Response when session id is absent */
+        {OPTIONAL_ABSENT_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, LensErrorCode.SESSION_ID_NOT_PROVIDED, "Session id "
+            + "not provided. Please provide a session id."},
+
+        /* Test Error Response when query is absent */
+        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_ABSENT_QUERY, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
+            + "is not provided, or it is empty or blank. Please provide a valid query."}};
+  }
+
+  @Test(dataProvider = "dpTestErrorResponse")
+  public void testErrorResponse(final Optional<LensSessionHandle> lensSessionHandle, final Optional<String> query,
+      final LensErrorCode expectedCode, final String expectedErrorMsg) throws InterruptedException {
 
     /* Setup */
-    new LensServices("test").initializeErrorCollection();
+    new LensServices(MOCK_LENS_SERVICES_NAME).initializeErrorCollection();
 
-    /* Prepare estimate request without a session id */
-    final WebTarget target = target("queryapi/queries");
-    final FormDataMultiPart mp = createFormDataMultiPart(Optional.<String>absent(),"select ID from nothing","estimate",
+    /* Prepare a request with given input */
+    final WebTarget target = target(PATH);
+    final FormDataMultiPart mp = createFormDataMultiPart(lensSessionHandle, query, MOCK_OPERATION,
         new LensConf());
 
     /* Execute request */
@@ -101,19 +118,24 @@ public class TestQueryAPIResponse extends JerseyTestNg.ContainerPerMethodTest {
             .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE)).readEntity(ErrorResponse.class);
 
     /* Validate returned error in response */
-    final LensError expectedLensError = new LensError(LensErrorCode.SESSION_ID_NOT_PROVIDED,"Session id not provided. "
-        + "Please provide a session id.");
-    assertFalse(response.isLensErrorEqual(expectedLensError));
+    final LensError expectedLensError = new LensError(expectedCode,expectedErrorMsg);
+    assertTrue(response.isLensErrorEqual(expectedLensError));
 
   }
 
-  private FormDataMultiPart createFormDataMultiPart(final Optional<String> sessionId, final String query, final String operation, final LensConf lensConf) {
+  private FormDataMultiPart createFormDataMultiPart(final Optional<LensSessionHandle> sessionId, final Optional<String> query,
+      final String operation, final LensConf lensConf) {
 
     final FormDataMultiPart mp = new FormDataMultiPart();
+
     if (sessionId.isPresent()) {
-      mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), sessionId.get(), MediaType.APPLICATION_XML_TYPE));
+      mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), sessionId.get(),
+          MediaType.APPLICATION_XML_TYPE));
     }
-    mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), query));
+
+    if (query.isPresent()) {
+      mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("query").build(), query.get()));
+    }
     mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("operation").build(), operation));
     mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("conf").fileName("conf").build(), lensConf,
         MediaType.APPLICATION_XML_TYPE));

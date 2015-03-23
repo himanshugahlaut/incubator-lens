@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 
 @XmlRootElement
 public class ErrorResponse extends LensResponse {
@@ -36,9 +37,8 @@ public class ErrorResponse extends LensResponse {
   ErrorResponse() {
 
   }
-  public ErrorResponse(final String apiVersion, final String id, final LensError error) {
+  public ErrorResponse(final String apiVersion, final String id,@NonNull final LensError error) {
     super(apiVersion, id);
-    checkArgument(error != null);
     this.error = error;
   }
 

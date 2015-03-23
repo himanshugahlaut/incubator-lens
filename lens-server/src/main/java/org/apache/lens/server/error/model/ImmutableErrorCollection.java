@@ -26,6 +26,7 @@ import org.apache.lens.api.error.LensErrorCode;
 import org.apache.commons.collections.MapUtils;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.NonNull;
 
 public class ImmutableErrorCollection implements ErrorCollection {
 
@@ -44,8 +45,7 @@ public class ImmutableErrorCollection implements ErrorCollection {
   }
 
   @Override
-  public LensError getLensError(final LensErrorCode errorCode) {
-    checkArgument(errorCode != null);
+  public LensError getLensError(@NonNull final LensErrorCode errorCode) {
     return errors.get(errorCode);
   }
 

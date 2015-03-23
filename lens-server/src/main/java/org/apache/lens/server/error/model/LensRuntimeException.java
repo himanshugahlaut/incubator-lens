@@ -22,18 +22,40 @@ import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
 import org.apache.lens.api.response.ErrorResponse;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
-public class LensSessionIdNotProvidedException extends RuntimeException {
+public class LensRuntimeException extends RuntimeException {
 
-  private final LensErrorCode code = LensErrorCode.SESSION_ID_NOT_PROVIDED;
+  private final LensErrorCode code;
+  private String apiVersion;
+  private String id;
+  private LensError lensError;
   private ErrorResponse response;
 
-  public void buildResponse(final String apiVersion, final String id, final LensError lensError) {
-    response = new ErrorResponse(apiVersion, id, lensError);
+  public LensRuntimeException(@NonNull final LensErrorCode code) {
+    this.code = code;
+  }
+
+  public void setApiVersion(@NonNull final String apiVersion) {
+    this.apiVersion = apiVersion;
+    this.response = null;
+  }
+
+  public void setId(@NonNull final String id) {
+    this.id = id;
+    this.response = null;
+  }
+
+  public void setLensError(@NonNull final LensError lensError) {
+    this.lensError = lensError;
+    this.response = null;
+  }
+
+  public ErrorResponse getResponse() {
+    if (response == null) {
+      response = new ErrorResponse(apiVersion,id,lensError);
+    }
+    return response;
   }
 
 }

@@ -26,12 +26,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum(Integer.class)
 public enum LensErrorCode {
 
-  @XmlEnumValue("1001")
-  USER_NAME_NOT_PROVIDED(1001),
-  @XmlEnumValue("1002")
-  INVAID_USERNAME_OR_PASSWORD(1002),
   @XmlEnumValue("1003")
-  SESSION_ID_NOT_PROVIDED(1003);
+  SESSION_ID_NOT_PROVIDED(1003),
+  @XmlEnumValue("1015")
+  NULL_OR_EMPTY_OR_BLANK_QUERY(1015);
 
   public int getValue() {
     return this.code;

@@ -39,7 +39,7 @@ import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.model.ErrorCollection;
-import org.apache.lens.server.error.model.LensSessionIdNotProvidedException;
+import org.apache.lens.server.error.model.LensRuntimeException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -78,12 +78,7 @@ public class QueryServiceResource {
   private void checkSessionId(LensSessionHandle sessionHandle, final String apiVersion, final String id) {
 
     if (sessionHandle == null) {
-
-      LensSessionIdNotProvidedException e = new LensSessionIdNotProvidedException();
-      LensError lensError = errorCollection.getLensError(e.getCode());
-      e.buildResponse(apiVersion,id,lensError);
-      throw e;
-
+      throwLensRuntimeException(LensErrorCode.SESSION_ID_NOT_PROVIDED,apiVersion,id);
     }
   }
 
@@ -96,6 +91,24 @@ public class QueryServiceResource {
     if (StringUtils.isBlank(query)) {
       throw new BadRequestException("Invalid query");
     }
+  }
+
+  private void checkQuery(String query, final String apiVersion, final String id) {
+    if (StringUtils.isBlank(query)) {
+      throwLensRuntimeException(LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY,apiVersion,id);
+    }
+  }
+
+  private void throwLensRuntimeException(final LensErrorCode code, final String apiVersion, final String id) {
+
+    LensError lensError = errorCollection.getLensError(code);
+
+    LensRuntimeException e = new LensRuntimeException(code);
+    e.setApiVersion(apiVersion);
+    e.setId(id);
+    e.setLensError(lensError);
+
+    throw e;
   }
 
   /**
@@ -197,16 +210,8 @@ public class QueryServiceResource {
     final String id = randomUUID().toString();
     final String apiVersion = "1.0";
 
-    checkQuery(query);
-
-    try {
-      checkSessionId(sessionid, apiVersion, id);
-    } catch (final LensSessionIdNotProvidedException e) {
-      LensErrorCode errorCode = e.getCode();
-      LensError lensError = errorCollection.getLensError(errorCode);
-      e.buildResponse(apiVersion, id, lensError);
-      throw e;
-    }
+    checkQuery(query,apiVersion,id);
+    checkSessionId(sessionid, apiVersion, id);
 
     try {
       SubmitOp sop = null;

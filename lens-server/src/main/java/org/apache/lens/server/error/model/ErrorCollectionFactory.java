@@ -28,6 +28,7 @@ import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.error.LensErrorCode;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.NonNull;
 
 public class ErrorCollectionFactory {
 
