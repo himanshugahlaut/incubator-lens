@@ -19,12 +19,9 @@
 package org.apache.lens.server.query;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.lens.api.query.SubmitOp.*;
 
 import java.util.List;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,10 +41,11 @@ import org.apache.lens.server.api.annotations.MultiPurposeResource;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.model.ErrorCollection;
 import org.apache.lens.server.error.model.LensRuntimeException;
-import org.apache.lens.server.error.model.UnSupportedQuerySubmitOpException;
+import org.apache.lens.api.error.SupportedQuerySubmitOperations;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -96,12 +94,11 @@ public class QueryServiceResource {
       } catch (IllegalArgumentException e) {
 
         LensError lensError = errorCollection.getLensError(LensErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION);
+        String stackTrace = ExceptionUtils.getStackTrace(e);
 
-        final ImmutableSet<SubmitOp> supportedOps =
-            Sets.immutableEnumSet(ESTIMATE, EXECUTE, EXPLAIN, EXECUTE_WITH_TIMEOUT);
-
-        DetailedError<ImmutableSet<SubmitOp>> lensDetailedError =
-            new DetailedError<ImmutableSet<SubmitOp>>(lensError.getLensErrorCode(),lensError.getMessage(),supportedOps);
+        DetailedError<SupportedQuerySubmitOperations> lensDetailedError =
+            new DetailedError<SupportedQuerySubmitOperations>(lensError.getLensErrorCode(), lensError.getMessage(),
+                stackTrace, new SupportedQuerySubmitOperations());
 
         throw new LensRuntimeException(LensErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION).setApiVersion(apiVersion)
             .setId(id).setLensError(lensDetailedError);

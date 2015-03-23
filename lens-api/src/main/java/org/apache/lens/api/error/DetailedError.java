@@ -21,17 +21,31 @@ package org.apache.lens.api.error;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.google.common.collect.ImmutableSet;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 import lombok.NonNull;
 
+@XmlSeeAlso(SupportedQuerySubmitOperations.class)
 public class DetailedError<PAYLOAD> extends LensError {
 
-  private final PAYLOAD payLoad;
+  @XmlElement
+  private PAYLOAD payLoad;
+
+  DetailedError() {
+
+  }
 
   public DetailedError(final LensErrorCode code, final String message,@NonNull final PAYLOAD payload) {
+    this(code,message,null,payload);
+  }
 
-    super(code, message);
+  public DetailedError(final LensErrorCode code, final String message, final String stackTrace, @NonNull final PAYLOAD payload) {
+
+    super(code, message, stackTrace);
     this.payLoad = payload;
-
+    formatMessage(payload);
   }
 
 }

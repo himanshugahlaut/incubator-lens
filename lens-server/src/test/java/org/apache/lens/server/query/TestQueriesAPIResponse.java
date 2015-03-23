@@ -48,6 +48,7 @@ import org.glassfish.jersey.test.JerseyTestNg;
 import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -69,6 +70,16 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
   private static final Optional<String> OPTIONAL_INVALID_OPERATION = Optional.of("invalid-operation");
   private static final Optional<String> OPTIONAL_ABSENT_OPERATION = Optional.<String> absent();
 
+  @BeforeClass
+  public void setUp() throws Exception {
+    super.setUp();
+
+    /* Setup will initialize errorCollection static variable in LensServices with contents from lens-errors.properties
+    file. When Jersey container creates an instance of resource class, resource class constructor will invoke
+    a method in LensServices to get a reference to this static variable */
+
+    new LensServices(MOCK_LENS_SERVICES_NAME).initializeErrorCollection();
+  }
   @Override
   protected Application configure() {
 
@@ -90,33 +101,36 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
     return new InMemoryTestContainerFactory();
   }
 
-  @DataProvider(name="dpTestErrorResponse", parallel = true)
-  public Object[][] dpTestErrorResponse() {
-    return new Object[][] {
+  @Test
+  public void testErrorResponseWhenSessionIdIsAbsent() {
 
-        /* Test Error Response when session id is absent */
-        {OPTIONAL_ABSENT_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_ESTIMATE_OPERATION, LensErrorCode.SESSION_ID_NOT_PROVIDED, "Session id "
-            + "not provided. Please provide a session id."},
-
-        /* Test Error Response when query is absent */
-        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_ABSENT_QUERY, OPTIONAL_ESTIMATE_OPERATION, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
-            + "is not provided, or it is empty or blank. Please provide a valid query."},
-
-        /* Test Error Response when invalid operation is submitted */
-        {OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_INVALID_OPERATION, LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query "
-            + "is not provided, or it is empty or blank. Please provide a valid query."}};
+    testErrorResponse(OPTIONAL_ABSENT_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_ESTIMATE_OPERATION,
+        LensErrorCode.SESSION_ID_NOT_PROVIDED, "Session id not provided. Please provide a session id.");
   }
 
-  @Test(dataProvider = "dpTestErrorResponse")
-  public void testErrorResponse(final Optional<LensSessionHandle> lensSessionHandle, final Optional<String> query,
-      final Optional<String> operation, final LensErrorCode expectedCode, final String expectedErrorMsg) throws InterruptedException {
+  @Test
+  public void testErrorResponseWhenQueryIsAbsent() {
 
-    /* Setup */
-    new LensServices(MOCK_LENS_SERVICES_NAME).initializeErrorCollection();
+    testErrorResponse(OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_ABSENT_QUERY, OPTIONAL_ESTIMATE_OPERATION,
+        LensErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY, "Query is not provided, or it is empty or blank. "
+            + "Please provide a valid query.");
+
+  }
+
+  @Test
+  public void testErrorResponseWhenInvalidOperationIsSubmitted() {
+
+    testErrorResponse(OPTIONAL_MOCK_LENS_SESSION_HANDLE, OPTIONAL_MOCK_QUERY, OPTIONAL_INVALID_OPERATION,
+        LensErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION, "Provided Operation is not supported. Supported Operations "
+            + "are: [estimate, execute, explain, execute_with_timeout]");
+  }
+
+  private void testErrorResponse(final Optional<LensSessionHandle> lensSessionHandle, final Optional<String> query,
+      final Optional<String> operation, final LensErrorCode expectedCode, final String expectedErrorMsg) {
 
     /* Prepare a request with given input */
     final WebTarget target = target(PATH);
-    final FormDataMultiPart mp = createFormDataMultiPart(lensSessionHandle, query, OPTIONAL_ESTIMATE_OPERATION,
+    final FormDataMultiPart mp = createFormDataMultiPart(lensSessionHandle, query, operation,
         new LensConf());
 
     /* Execute request */
@@ -127,10 +141,6 @@ public class TestQueriesAPIResponse extends JerseyTestNg.ContainerPerClassTest {
     final LensError expectedLensError = new LensError(expectedCode,expectedErrorMsg);
     assertTrue(response.isLensErrorEqual(expectedLensError));
 
-  }
-
-  private void testErrorResponse() {
-    
   }
 
   private FormDataMultiPart createFormDataMultiPart(final Optional<LensSessionHandle> sessionId, final Optional<String> query,

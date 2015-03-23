@@ -23,29 +23,44 @@ import org.apache.commons.lang.StringUtils;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 
-@EqualsAndHashCode
-@Getter(AccessLevel.PUBLIC)
+@EqualsAndHashCode(exclude = {"stackTrace"})
+@Getter
+@XmlSeeAlso(DetailedError.class)
 public class LensError {
 
-  @XmlElement
+  @XmlElement(name = "code")
   private LensErrorCode lensErrorCode;
 
   @XmlElement
   private String message;
 
+  @XmlElement
+  private String stackTrace;
+
   LensError() {
 
   }
   public LensError(final LensErrorCode lensErrorCode, final String message) {
+    this(lensErrorCode,message,null);
+  }
+
+  public LensError(@NonNull final LensErrorCode lensErrorCode, final String message, final String stackTrace) {
 
     checkArgument(lensErrorCode != null);
     checkArgument(StringUtils.isNotBlank(message));
 
     this.lensErrorCode = lensErrorCode;
     this.message = message;
+    this.stackTrace = stackTrace;
+  }
+
+  public void formatMessage(final Object... args) {
+    this.message = String.format(message,args);
   }
 }
