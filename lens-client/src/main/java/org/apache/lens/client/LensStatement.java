@@ -29,6 +29,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.lens.api.APIResult;
 import org.apache.lens.api.query.*;
+import org.apache.lens.api.response.*;
+import org.apache.lens.api.response.LensResponse;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -264,7 +266,7 @@ public class LensStatement {
       throw new IllegalStateException("Lens Connection has to be " + "established before querying");
     }
 
-    Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+    Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class, LensJAXBContextResolver.class).build();
     FormDataMultiPart mp = new FormDataMultiPart();
     mp.bodyPart(new FormDataBodyPart(FormDataContentDisposition.name("sessionid").build(), connection
       .getSessionHandle(), MediaType.APPLICATION_XML_TYPE));
@@ -275,9 +277,8 @@ public class LensStatement {
 
     WebTarget target = getQueryWebTarget(client);
 
-    QueryHandle handle = target.request()
-      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
-    return handle;
+    return target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+        new GenericType<LensResponse<QueryHandle, NoErrorPayload>>(){}).getData();
   }
 
   /**
@@ -302,7 +303,9 @@ public class LensStatement {
       : queryName));
 
     QueryHandle handle = target.request()
-      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryHandle.class);
+      .post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+          new GenericType<LensResponse<QueryHandle, NoErrorPayload>>() {}).getData();
+
     return handle;
   }
 
@@ -326,7 +329,8 @@ public class LensStatement {
 
     WebTarget target = getQueryWebTarget(client);
 
-    QueryPlan handle = target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), QueryPlan.class);
+    QueryPlan handle = target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE),
+        new GenericType<LensResponse<QueryPlan, NoErrorPayload>>() {}).getData();
     return handle;
   }
 

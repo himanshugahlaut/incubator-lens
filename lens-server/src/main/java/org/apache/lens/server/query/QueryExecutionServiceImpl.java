@@ -36,6 +36,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.LensException;
 import org.apache.lens.api.LensSessionHandle;
+import org.apache.lens.api.error.LensMultiCauseException;
 import org.apache.lens.api.query.*;
 import org.apache.lens.api.query.QueryStatus.Status;
 import org.apache.lens.driver.cube.RewriteUtil;
@@ -70,6 +71,8 @@ import org.apache.hive.service.cli.TypeDescriptor;
 import org.codehaus.jackson.*;
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.map.module.SimpleModule;
+
+import com.google.common.collect.ImmutableList;
 
 import lombok.Getter;
 
@@ -1062,18 +1065,37 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       // Evaluate success of rewrite and estimate
       boolean succeededOnce = false;
       List<String> failureCauses = new ArrayList<String>(numDrivers);
+      List<LensException> causes = new ArrayList<LensException>(numDrivers);
 
       for (RewriteEstimateRunnable r : runnables) {
         if (r.isSucceeded()) {
           succeededOnce = true;
         } else {
           failureCauses.add(r.getFailureCause());
+
+          if (r.getCause() != null) {
+            causes.add(r.getCause());
+          }
         }
       }
 
       // Throw exception if none of the rewrite+estimates are successful.
       if (!succeededOnce) {
-        throw new LensException(StringUtils.join(failureCauses, '\n'));
+
+        if (!causes.isEmpty()) {
+
+          final LensException firstCause = causes.get(0);
+
+          for (LensException cause : causes) {
+            if (!cause.equals(firstCause)) {
+              throw new LensMultiCauseException(ImmutableList.copyOf(causes));
+            }
+          }
+
+          throw firstCause;
+        } else {
+          throw new LensException(StringUtils.join(failureCauses, '\n'));
+        }
       }
 
       MethodMetricsContext selectGauge = MethodMetricsFactory.createMethodGauge(ctx.getConf(), false,
@@ -1106,6 +1128,9 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
     private String failureCause = null;
 
     @Getter
+    private LensException cause;
+
+    @Getter
     private volatile boolean completed;
 
     public RewriteEstimateRunnable(
@@ -1130,7 +1155,10 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
         // 1. Rewrite for driver
         rewriterRunnable.run();
         succeeded = rewriterRunnable.isSucceeded();
-        failureCause = rewriterRunnable.getFailureCause();
+        if (!succeeded) {
+          failureCause = rewriterRunnable.getFailureCause();
+          cause = rewriterRunnable.getCause();
+        }
 
         rewriteGauge.markSuccess();
 
@@ -1141,9 +1169,10 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
 
           estimateRunnable.run();
           succeeded = estimateRunnable.isSucceeded();
-          failureCause = estimateRunnable.getFailureCause();
 
           if (!succeeded) {
+            failureCause = estimateRunnable.getFailureCause();
+            cause = estimateRunnable.getCause();
             LOG.error("Estimate failed for driver " + driver + " cause: " + failureCause);
           }
           estimateGauge.markSuccess();
@@ -1988,15 +2017,6 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       accept(query, qconf, SubmitOp.ESTIMATE);
       rewriteAndSelect(estimateQueryContext);
       return new EstimateResult(estimateQueryContext.getSelectedDriverQueryCost());
-    } catch (LensException e) {
-      LOG.error("Error during estimate for :" + query, e);
-      EstimateResult error;
-      if (e.getCause() != null && e.getCause().getMessage() != null) {
-        error = new EstimateResult(e.getCause().getMessage());
-      } else {
-        error = new EstimateResult(e.getMessage());
-      }
-      return error;
     } finally {
       release(sessionHandle);
     }

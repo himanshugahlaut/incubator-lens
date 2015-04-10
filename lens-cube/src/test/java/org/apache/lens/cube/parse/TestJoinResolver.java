@@ -23,6 +23,7 @@ import static org.apache.lens.cube.parse.CubeTestSetup.*;
 
 import java.util.*;
 
+import org.apache.lens.api.LensException;
 import org.apache.lens.cube.metadata.*;
 import org.apache.lens.cube.metadata.SchemaGraph.TableRelationship;
 
@@ -372,7 +373,7 @@ public class TestJoinResolver extends TestQueryRewrite {
   }
 
   @Test
-  public void testJoinChains() throws SemanticException, ParseException {
+  public void testJoinChains() throws SemanticException, ParseException, LensException {
     String query, hqlQuery, expected;
 
     // Single joinchain with direct link
@@ -570,7 +571,7 @@ public class TestJoinResolver extends TestQueryRewrite {
   }
 
   @Test
-  public void testConflictingJoins() throws ParseException {
+  public void testConflictingJoins() throws ParseException, LensException {
     // Single joinchain with two paths, intermediate dimension accessed separately by name.
     String query = "select cityState.name, citydim.name, sum(msr2) from basecube where " + TWO_DAYS_RANGE;
     try {
@@ -580,7 +581,7 @@ public class TestJoinResolver extends TestQueryRewrite {
     } catch (SemanticException e) {
       Assert.assertNotNull(e.getCause());
       Assert.assertEquals(e.getCause().getMessage().toLowerCase(),
-        "Table citydim is getting accessed via joinchain: citystate and no chain at all".toLowerCase());
+          "Table citydim is getting accessed via joinchain: citystate and no chain at all".toLowerCase());
     }
 
     // Multi joinchains + a dimension part of one of the chains.
@@ -649,7 +650,7 @@ public class TestJoinResolver extends TestQueryRewrite {
   }
 
   @Test
-  public void testMultiPaths() throws SemanticException, ParseException {
+  public void testMultiPaths() throws SemanticException, ParseException, LensException {
     String query, hqlQuery, expected;
 
     query = "select testdim3.name, sum(msr2) from testcube where " + TWO_DAYS_RANGE;
@@ -727,7 +728,7 @@ public class TestJoinResolver extends TestQueryRewrite {
   }
 
   @Test
-  public void testChainsWithMultipleStorage() throws ParseException, HiveException {
+  public void testChainsWithMultipleStorage() throws ParseException, HiveException, LensException {
     Configuration conf = new Configuration(hconf);
     conf.unset(CubeQueryConfUtil.DRIVER_SUPPORTED_STORAGES); // supports all storages
     String dimOnlyQuery = "select testDim2.name, testDim2.cityStateCapital FROM testDim2 where " + TWO_DAYS_RANGE;
