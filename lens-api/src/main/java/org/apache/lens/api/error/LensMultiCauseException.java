@@ -34,6 +34,18 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
+/**
+ * LensMultiCauseException can be used when there are more than one independent failures in the same computation.
+ *
+ * E.g.
+ *
+ * (a) If a decision is based on evaluating multiple iterations with same / different data input, then collection of
+ * failures of all iterations can be recorded in a LensMultiCauseException
+ *
+ * (b) If a decision is based on evaluating multiple operations in parallel background threads, then collection of
+ * failures of all background threads can be recorded using LensMultiCauseException
+ *
+ */
 public class LensMultiCauseException extends LensException {
 
   @Getter(AccessLevel.PROTECTED)
@@ -61,9 +73,8 @@ public class LensMultiCauseException extends LensException {
     List<LensErrorTO> childErrors = new LinkedList<LensErrorTO>();
 
     for (LensException cause : getCauses()) {
-      childErrors.add(cause.getLensErrorTO(errorCollection));
+      childErrors.add(cause.buildLensErrorTO(errorCollection));
     }
-
     return childErrors;
   }
 }

@@ -22,22 +22,24 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+
+import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.StringUtils;
 
 import lombok.*;
 
+/**
+ *
+ * Transport object to be used to transfer error information.
+ *
+ * @param <PAYLOAD>  represents type of error payload transferred in failure lens response
+ */
 @EqualsAndHashCode(exclude = { "stackTrace" })
 @ToString
 @NoArgsConstructor(access =  AccessLevel.PACKAGE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LensErrorTO<PAYLOAD> {
-
-  /* PAYLOAD represents type of error payload transferred in failure response  */
 
   @XmlElement
   private int code;

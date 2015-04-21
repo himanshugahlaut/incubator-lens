@@ -25,6 +25,8 @@ import static org.apache.lens.api.error.LensCommonErrorCode.INTERNAL_SERVER_ERRO
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Arrays;
+
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.response.LensErrorTO;
@@ -33,7 +35,6 @@ import org.apache.lens.api.response.NoErrorPayload;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -41,7 +42,6 @@ import lombok.NonNull;
  * The Class LensException.
  */
 @SuppressWarnings("serial")
-@EqualsAndHashCode(callSuper = false)
 public class LensException extends Exception {
 
   private static final int DEFAULT_LENS_EXCEPTION_ERROR_CODE = INTERNAL_SERVER_ERROR.getValue();
@@ -57,18 +57,12 @@ public class LensException extends Exception {
   private LensResponse lensResponse;
 
   /**
-   * The lensError instance initialized and cached by {@link #getLensErrorConf(ErrorCollection)}
-   * */
-  private LensError lensError;
-
-  /**
    * Constructs a new Lens Exception.
    *
    * @see Exception#Exception(String)
    */
-  public LensException(String msg) {
-    super(msg);
-    errorCode = DEFAULT_LENS_EXCEPTION_ERROR_CODE;
+  public LensException(String errorMsg) {
+    this(errorMsg, DEFAULT_LENS_EXCEPTION_ERROR_CODE);
   }
 
   /**
@@ -76,9 +70,8 @@ public class LensException extends Exception {
    *
    * @see Exception#Exception(String, Throwable)
    */
-  public LensException(String msg, Throwable cause) {
-    super(msg, cause);
-    errorCode = DEFAULT_LENS_EXCEPTION_ERROR_CODE;
+  public LensException(String errorMsg, Throwable cause) {
+    this(errorMsg, DEFAULT_LENS_EXCEPTION_ERROR_CODE, cause);
   }
 
   /**
@@ -87,8 +80,7 @@ public class LensException extends Exception {
    * @see Exception#Exception()
    */
   public LensException() {
-    super();
-    errorCode = DEFAULT_LENS_EXCEPTION_ERROR_CODE;
+    this(null, DEFAULT_LENS_EXCEPTION_ERROR_CODE);
   }
 
   /**
@@ -97,8 +89,7 @@ public class LensException extends Exception {
    * @see Exception#Exception(Throwable)
    */
   public LensException(Throwable cause) {
-    super(cause);
-    errorCode = DEFAULT_LENS_EXCEPTION_ERROR_CODE;
+    this(null, DEFAULT_LENS_EXCEPTION_ERROR_CODE, cause);
   }
 
   /**
@@ -106,10 +97,8 @@ public class LensException extends Exception {
    *
    * @see Exception#Exception()
    */
-  public LensException(final int errorcode) {
-    super();
-    checkArgument(errorcode > 0);
-    errorCode = errorcode;
+  public LensException(final int errorCode) {
+    this(null, errorCode);
   }
 
   /**
@@ -117,21 +106,8 @@ public class LensException extends Exception {
    *
    * @see Exception#Exception()
    */
-  public LensException(final String msg, final int errorcode) {
-    super(msg);
-    checkArgument(errorcode > 0);
-    errorCode = errorcode;
-  }
-
-  /**
-   * Constructs a new Lens Exception with error code and cause.
-   *
-   * @see Exception#Exception(Throwable)
-   */
-  public LensException(final int errorcode, final Throwable cause) {
-    super(cause);
-    checkArgument(errorcode > 0);
-    errorCode = errorcode;
+  public LensException(final String errorMsg, final int errorCode) {
+    this(errorMsg, errorCode, null);
   }
 
   /**
@@ -139,9 +115,22 @@ public class LensException extends Exception {
    *
    * @see Exception#Exception(Throwable)
    */
-  public LensException(final int errorcode, final Throwable cause, @NonNull final Object... errorMsgFormattingArgs) {
-    super(cause);
+  public LensException(final int errorCode, final Throwable cause, @NonNull final Object... errorMsgFormattingArgs) {
+    this(null, errorCode, cause, errorMsgFormattingArgs);
+  }
+
+  /**
+   * Constructs a new Lens Exception with exception error message, error code, cause and error msg formatting arguments.
+   *
+   * @see Exception#Exception(Throwable)
+   */
+  public LensException(final String errorMsg, final int errorcode, final Throwable cause,
+      @NonNull final Object... errorMsgFormattingArgs) {
+
+    super(errorMsg, cause);
     checkArgument(errorcode > 0);
+    checkArgument(errorMsgFormattingArgs != null);
+
     this.errorCode = errorcode;
     this.errorMsgFormattingArgs = errorMsgFormattingArgs;
   }
@@ -149,22 +138,28 @@ public class LensException extends Exception {
   public final void buildLensErrorResponse(final ErrorCollection errorCollection,
       final String apiVersion, final String id) {
 
-    final LensError lensError = getLensErrorConf(errorCollection);
-    final LensErrorTO lensErrorTO = getLensErrorTO(errorCollection);
+    final LensError lensError = errorCollection.getLensError(errorCode);
+    final LensErrorTO lensErrorTO = buildLensErrorTOInternal(errorCollection, lensError);
     lensResponse = LensResponse.composedOf(apiVersion, id, lensErrorTO, lensError.getHttpStatusCode());
   }
 
-  public LensErrorTO getLensErrorTO(final ErrorCollection errorCollection) {
+  public LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection) {
 
-    final LensError lensError = getLensErrorConf(errorCollection);
-    final String formattedErrorMsg = getFormattedErrorMsg(lensError);
-    final String stackTrace = getStackTraceString();
-
-    return createLensErrorTO(errorCollection, formattedErrorMsg, stackTrace);
+    final LensError lensError = errorCollection.getLensError(errorCode);
+    return buildLensErrorTOInternal(errorCollection, lensError);
   }
 
-  public boolean isEqual(final LensException e) {
-    return this.equals(e) && isErrorMsgEqual(e);
+  public boolean equals(final LensException e) {
+
+    if (this == e) {
+      return true;
+    }
+
+    if (errorCode == e.errorCode && isErrorMsgEqual(e)
+        && Arrays.deepEquals(errorMsgFormattingArgs, e.errorMsgFormattingArgs)) {
+      return true;
+    }
+    return false;
   }
 
   protected String getFormattedErrorMsg(LensError lensError) {
@@ -182,14 +177,6 @@ public class LensException extends Exception {
     return ExceptionUtils.getStackTrace(this);
   }
 
-  private LensError getLensErrorConf(final ErrorCollection errorCollection) {
-
-    if (lensError == null) {
-      lensError = errorCollection.getLensError(errorCode);
-    }
-    return lensError;
-  }
-
   private boolean isErrorMsgEqual(final LensException e) {
 
     if (this.getMessage() == null && e.getMessage() == null) {
@@ -200,5 +187,12 @@ public class LensException extends Exception {
       return this.getMessage().equals(e.getMessage());
     }
     return false;
+  }
+
+  private LensErrorTO buildLensErrorTOInternal(final ErrorCollection errorCollection, final LensError lensError) {
+
+    final String formattedErrorMsg = getFormattedErrorMsg(lensError);
+    final String stackTrace = getStackTraceString();
+    return createLensErrorTO(errorCollection, formattedErrorMsg, stackTrace);
   }
 }

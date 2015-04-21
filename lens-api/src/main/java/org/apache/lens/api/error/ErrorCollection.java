@@ -33,7 +33,7 @@ public interface ErrorCollection {
   /**
    *
    * @return the Immutable list of all error payload classes stored in ErrorCollection. If there are no error payload
-   *         classes, then and empty list will be returned.
+   *         classes, then an empty list will be returned.
    */
   ImmutableList<Class> getErrorPayloadClasses();
 

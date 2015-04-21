@@ -1116,7 +1116,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
         if (!causes.isEmpty()) {
           final LensException firstCause = causes.get(0);
           for (LensException cause : causes) {
-            if (!cause.isEqual(firstCause)) {
+            if (!cause.equals(firstCause)) {
               throw new LensMultiCauseException(StringUtils.join(failureCauses, '\n'), ImmutableList.copyOf(causes));
             }
           }

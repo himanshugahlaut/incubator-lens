@@ -67,8 +67,9 @@ public class LensResponse<DATA, PAYLOAD> {
     return new LensResponse<DATA, NoErrorPayload>(apiVersion, id, data, null, httpStatusCode);
   }
 
-  public static <PAYLOAD> LensResponse<NoSuccessResponseData, PAYLOAD> composedOf(final String apiVersion,
-      final String id, @NonNull final LensErrorTO<PAYLOAD> lensErrorTO, @NonNull final Status httpStatusCode) {
+  public static <PAYLOAD> LensResponse<NoSuccessResponseData, PAYLOAD> composedOf(
+      final String apiVersion, final String id, @NonNull final LensErrorTO<PAYLOAD> lensErrorTO,
+      @NonNull final Status httpStatusCode) {
 
     return new LensResponse<NoSuccessResponseData, PAYLOAD>(apiVersion, id, null, lensErrorTO, httpStatusCode);
   }

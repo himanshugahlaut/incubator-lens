@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ErrorCollectionFactory {
 
   private static final String LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION = "lens-errors";
+  private static final String ERRORS_ARRAY_NAME = "errors";
   private static final String ERROR_CODE_KEY = "errorCode";
   private static final String HTTP_STATUS_CODE_KEY = "httpStatusCode";
   private static final String ERROR_MSG_KEY = "errorMsg";
@@ -46,7 +47,7 @@ public class ErrorCollectionFactory {
 
     Map<Integer, LensError> errorCollection = new HashMap<Integer, LensError>();
     Config rootConfig = ConfigFactory.load(LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION);
-    List<? extends Config> configList = rootConfig.getConfigList("errors");
+    List<? extends Config> configList = rootConfig.getConfigList(ERRORS_ARRAY_NAME);
 
     for (final Config config : configList) {
 
@@ -67,7 +68,6 @@ public class ErrorCollectionFactory {
 
     ImmutableMap immutableMap = ImmutableMap.copyOf(errorCollection);
     return new ImmutableErrorCollection(immutableMap);
-
   }
 }
 
