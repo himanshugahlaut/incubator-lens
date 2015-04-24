@@ -49,7 +49,7 @@ public class ColUnAvailableInTimeRangeException extends LensException {
   }
 
   @Override
-  protected LensErrorTO createLensErrorTO(final ErrorCollection errorCollection, final String errorMsg,
+  protected LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection, final String errorMsg,
       final String stackTrace) {
 
     return LensErrorTO.composedOf(COLUMN_UNAVAILABLE_IN_TIME_RANGE.getValue(), errorMsg, stackTrace,

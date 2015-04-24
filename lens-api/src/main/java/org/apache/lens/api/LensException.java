@@ -42,6 +42,7 @@ import lombok.NonNull;
  * The Class LensException.
  */
 @SuppressWarnings("serial")
+
 public class LensException extends Exception {
 
   private static final int DEFAULT_LENS_EXCEPTION_ERROR_CODE = INTERNAL_SERVER_ERROR.getValue();
@@ -129,7 +130,6 @@ public class LensException extends Exception {
 
     super(errorMsg, cause);
     checkArgument(errorcode > 0);
-    checkArgument(errorMsgFormattingArgs != null);
 
     this.errorCode = errorcode;
     this.errorMsgFormattingArgs = errorMsgFormattingArgs;
@@ -139,14 +139,27 @@ public class LensException extends Exception {
       final String apiVersion, final String id) {
 
     final LensError lensError = errorCollection.getLensError(errorCode);
-    final LensErrorTO lensErrorTO = buildLensErrorTOInternal(errorCollection, lensError);
+    final LensErrorTO lensErrorTO = buildLensErrorTO(errorCollection, lensError);
     lensResponse = LensResponse.composedOf(apiVersion, id, lensErrorTO, lensError.getHttpStatusCode());
   }
 
-  public LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection) {
+  public final LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection) {
 
     final LensError lensError = errorCollection.getLensError(errorCode);
-    return buildLensErrorTOInternal(errorCollection, lensError);
+    return buildLensErrorTO(errorCollection, lensError);
+  }
+
+  protected LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection, final String errorMsg,
+      final String stackTrace) {
+
+    return LensErrorTO.<NoErrorPayload>composedOf(errorCode, errorMsg, stackTrace);
+  }
+
+  private LensErrorTO buildLensErrorTO(final ErrorCollection errorCollection, final LensError lensError) {
+
+    final String formattedErrorMsg = getFormattedErrorMsg(lensError);
+    final String stackTrace = getStackTraceString();
+    return buildLensErrorTO(errorCollection, formattedErrorMsg, stackTrace);
   }
 
   public boolean equals(final LensException e) {
@@ -167,12 +180,6 @@ public class LensException extends Exception {
     return lensError.getFormattedErrorMsg(errorMsgFormattingArgs);
   }
 
-  protected LensErrorTO createLensErrorTO(final ErrorCollection errorCollection, final String errorMsg,
-      final String stackTrace) {
-
-    return LensErrorTO.<NoErrorPayload>composedOf(errorCode, errorMsg, stackTrace);
-  }
-
   private String getStackTraceString() {
     return ExceptionUtils.getStackTrace(this);
   }
@@ -189,10 +196,15 @@ public class LensException extends Exception {
     return false;
   }
 
-  private LensErrorTO buildLensErrorTOInternal(final ErrorCollection errorCollection, final LensError lensError) {
+  @Override
+  public int hashCode() {
 
-    final String formattedErrorMsg = getFormattedErrorMsg(lensError);
-    final String stackTrace = getStackTraceString();
-    return createLensErrorTO(errorCollection, formattedErrorMsg, stackTrace);
+    final int PRIME = 59;
+    int result = 1;
+
+    result = result * PRIME + errorCode;
+    result = result * PRIME + (this.getMessage() == null ? 0 : this.getMessage().hashCode());
+    result = result * PRIME + Arrays.deepHashCode(errorMsgFormattingArgs);
+    return result;
   }
 }

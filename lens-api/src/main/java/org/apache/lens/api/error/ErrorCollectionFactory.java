@@ -31,9 +31,6 @@ import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class ErrorCollectionFactory {
 
   private static final String LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION = "lens-errors";
@@ -67,7 +64,7 @@ public class ErrorCollectionFactory {
     }
 
     ImmutableMap immutableMap = ImmutableMap.copyOf(errorCollection);
-    return new ImmutableErrorCollection(immutableMap);
+    return new ErrorMap(immutableMap);
   }
 }
 

@@ -1055,8 +1055,6 @@ public class ColumnarSQLRewriter implements QueryRewriter {
         LOG.info("Input Query : " + query);
         LOG.info("Rewritten Query :  " + queryReplacedUdf);
       }
-    } catch (ParseException e) {
-      throw new LensException(e);
     } catch (SemanticException e) {
       throw new LensException(e);
     }

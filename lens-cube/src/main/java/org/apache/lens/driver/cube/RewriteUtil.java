@@ -36,7 +36,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
-import org.apache.hadoop.hive.ql.parse.ParseException;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.log4j.Logger;
 
@@ -85,7 +84,7 @@ public final class RewriteUtil {
    * @throws ParseException    the parse exception
    */
   static List<CubeQueryInfo> findCubePositions(String query, HiveConf conf)
-    throws SemanticException, ParseException, LensException {
+    throws SemanticException, LensException {
 
     ASTNode ast = HQLParser.parseHQL(query, conf);
     LOG.debug("User query AST:" + ast.dump());

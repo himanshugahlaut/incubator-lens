@@ -53,7 +53,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
-import org.apache.hadoop.hive.ql.parse.ParseException;
 import org.apache.log4j.Logger;
 
 import lombok.Getter;
@@ -509,20 +508,17 @@ public class JDBCDriver implements LensDriver {
     MethodMetricsContext checkForAllowedQuery = MethodMetricsFactory.createMethodGauge(driverQueryConf, true,
       CHECK_ALLOWED_QUERY);
     // check if it is select query
-    try {
-      ASTNode ast = HQLParser.parseHQL(query, ctx.getHiveConf());
-      if (ast.getToken().getType() != HiveParser.TOK_QUERY) {
+
+    ASTNode ast = HQLParser.parseHQL(query, ctx.getHiveConf());
+    if (ast.getToken().getType() != HiveParser.TOK_QUERY) {
+      throw new LensException("Not allowed statement:" + query);
+    } else {
+      // check for insert clause
+      ASTNode dest = HQLParser.findNodeByPath(ast, HiveParser.TOK_INSERT);
+      if (dest != null
+        && ((ASTNode) (dest.getChild(0).getChild(0).getChild(0))).getToken().getType() != TOK_TMP_FILE) {
         throw new LensException("Not allowed statement:" + query);
-      } else {
-        // check for insert clause
-        ASTNode dest = HQLParser.findNodeByPath(ast, HiveParser.TOK_INSERT);
-        if (dest != null
-          && ((ASTNode) (dest.getChild(0).getChild(0).getChild(0))).getToken().getType() != TOK_TMP_FILE) {
-          throw new LensException("Not allowed statement:" + query);
-        }
       }
-    } catch (ParseException e) {
-      throw new LensException(e);
     }
     checkForAllowedQuery.markSuccess();
 

@@ -133,7 +133,7 @@ public final class HQLParser {
     return ARITHMETIC_OPERATORS.contains(tokenType);
   }
 
-  public static ASTNode parseHQL(String query, HiveConf conf) throws ParseException, LensException {
+  public static ASTNode parseHQL(String query, HiveConf conf) throws LensException {
     ParseDriver driver = new ParseDriver();
     ASTNode tree = null;
     Context ctx = null;

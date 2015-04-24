@@ -33,11 +33,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ImmutableErrorCollection implements ErrorCollection {
+public class ErrorMap implements ErrorCollection {
 
   private final ImmutableMap<Integer, LensError> errors;
 
-  public ImmutableErrorCollection(@NonNull final ImmutableMap<Integer, LensError> errors) {
+  public ErrorMap(@NonNull final ImmutableMap<Integer, LensError> errors) {
 
     checkArgument(!errors.isEmpty());
     this.errors = errors;
@@ -58,7 +58,6 @@ public class ImmutableErrorCollection implements ErrorCollection {
       }
       lensError = errors.get(INTERNAL_SERVER_ERROR);
     }
-
     return lensError;
   }
 
@@ -76,5 +75,4 @@ public class ImmutableErrorCollection implements ErrorCollection {
     }
     return ImmutableList.copyOf(errorPayloadClasses);
   }
-
 }
