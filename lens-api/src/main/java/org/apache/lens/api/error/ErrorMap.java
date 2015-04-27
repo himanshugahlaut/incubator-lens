@@ -21,14 +21,16 @@ package org.apache.lens.api.error;
 import static org.apache.lens.api.error.LensCommonErrorCode.INTERNAL_SERVER_ERROR;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +43,13 @@ public class ErrorMap implements ErrorCollection {
 
     checkArgument(!errors.isEmpty());
     this.errors = errors;
+
+    /* All error pay load classes in error objects should be unique.
+     * If two error objects are having same error code, then error pay load passed by them should also be same. */
+
+    checkState(getErrorPayloadClassesList().size() == getErrorPayloadClasses().size(),
+        "In error conf files, error objects defined with different error codes must have different"
+            + " error payload class.");
   }
 
   @Override
@@ -56,13 +65,18 @@ public class ErrorMap implements ErrorCollection {
             + "lens-additional-errors.conf. We will drop this random error code and send INTERNAL SERVER ERROR "
             + "instead of this.", errorCode);
       }
-      lensError = errors.get(INTERNAL_SERVER_ERROR);
+      lensError = errors.get(INTERNAL_SERVER_ERROR.getValue());
     }
     return lensError;
   }
 
   @Override
-  public ImmutableList<Class> getErrorPayloadClasses() {
+  public ImmutableSet<Class> getErrorPayloadClasses() {
+
+    return ImmutableSet.copyOf(getErrorPayloadClassesList());
+  }
+
+  private ImmutableList<Class> getErrorPayloadClassesList() {
 
     List<Class> errorPayloadClasses = new LinkedList<Class>();
 

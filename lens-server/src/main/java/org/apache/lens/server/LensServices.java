@@ -49,6 +49,7 @@ import org.apache.hive.service.Service;
 import org.apache.hive.service.cli.CLIService;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -413,7 +414,7 @@ public class LensServices extends CompositeService implements ServiceProvider {
     }
   }
 
-  public static ImmutableList<Class> getErrorPayloadClasses() {
+  public static ImmutableSet<Class> getErrorPayloadClasses() {
     return errorCollection.getErrorPayloadClasses();
   }
 }

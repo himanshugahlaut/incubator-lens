@@ -19,6 +19,7 @@
 package org.apache.lens.api.error;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public interface ErrorCollection {
 
@@ -32,9 +33,9 @@ public interface ErrorCollection {
 
   /**
    *
-   * @return the Immutable list of all error payload classes stored in ErrorCollection. If there are no error payload
-   *         classes, then an empty list will be returned.
+   * @return the Immutable set of all error payload classes stored in ErrorCollection. If there are no error payload
+   *         classes, then an empty set will be returned.
    */
-  ImmutableList<Class> getErrorPayloadClasses();
+  ImmutableSet<Class> getErrorPayloadClasses();
 
 }
