@@ -35,7 +35,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * LensMultiCauseException can be used when there are more than one independent failures in the same computation.
+ * Thrown when there are more than one independent failures in the same computation.
  *
  * E.g.
  *

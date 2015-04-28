@@ -343,5 +343,4 @@ public class TestHQLParser {
     String genQuery = HQLParser.getString(selectAST);
     Assert.assertEquals(genQuery, select);
   }
-
 }

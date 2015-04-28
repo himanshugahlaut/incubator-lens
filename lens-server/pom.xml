@@ -245,9 +245,6 @@
   <build>
     <testResources>
       <testResource>
-        <directory>${project.basedir}/conf</directory>
-      </testResource>
-      <testResource>
         <directory>${project.basedir}/testdata</directory>
       </testResource>
       <testResource>
