@@ -201,7 +201,7 @@ public class TestAggregateResolver extends TestQueryRewrite {
   }
 
   @Test
-  public void testAggregateResolverOff() throws SemanticException, ParseException {
+  public void testAggregateResolverOff() throws SemanticException, ParseException, LensException {
     Configuration conf2 = getConf("C1,C2");
     conf2.setBoolean(CubeQueryConfUtil.DISABLE_AGGREGATE_RESOLVER, true);
 
