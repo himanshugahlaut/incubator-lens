@@ -42,7 +42,6 @@ import lombok.NonNull;
  * The Class LensException.
  */
 @SuppressWarnings("serial")
-
 public class LensException extends Exception {
 
   private static final int DEFAULT_LENS_EXCEPTION_ERROR_CODE = INTERNAL_SERVER_ERROR.getValue();

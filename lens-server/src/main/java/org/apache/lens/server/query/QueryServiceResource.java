@@ -188,9 +188,10 @@ public class QueryServiceResource {
    * @param timeoutmillis The timeout for the query, honored only in case of value {@value
    *                      SubmitOp#EXECUTE_WITH_TIMEOUT} operation
    * @param queryName     human readable query name set by user (optional parameter)
-   * @return {@link QueryHandle} in case of {@value SubmitOp#EXECUTE} operation. {@link QueryPlan} in case of {@value
-   * SubmitOp#EXPLAIN} operation. {@link QueryHandleWithResultSet} in case {@value SubmitOp#EXECUTE_WITH_TIMEOUT}
-   * operation. {@link EstimateResult} in case of {@value SubmitOp#ESTIMATE} operation.
+   * @return {@link LensResponse} with DATA as {@link QueryHandle} in case of {@value SubmitOp#EXECUTE} operation.
+   * {@link QueryPlan} in case of {@value SubmitOp#EXPLAIN} operation. {@link QueryHandleWithResultSet} in case
+   * {@value SubmitOp#EXECUTE_WITH_TIMEOUT} operation. {@link QueryCost} in case of
+   * {@value SubmitOp#ESTIMATE} operation.
    */
   @POST
   @Path("queries")
@@ -211,7 +212,7 @@ public class QueryServiceResource {
       QuerySubmitResult result;
       switch (sop) {
       case ESTIMATE:
-        result = queryServer.estimate(sessionid, query, conf).getCost();
+        result = queryServer.estimate(sessionid, query, conf);
         break;
       case EXECUTE:
         result = queryServer.executeAsync(sessionid, query, conf, queryName);

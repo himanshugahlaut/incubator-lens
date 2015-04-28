@@ -2032,7 +2032,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
    * java.lang.String, org.apache.lens.api.LensConf)
    */
   @Override
-  public EstimateResult estimate(LensSessionHandle sessionHandle, String query, LensConf lensConf)
+  public QueryCost estimate(LensSessionHandle sessionHandle, String query, LensConf lensConf)
     throws LensException {
     try {
       LOG.info("Estimate: " + sessionHandle.toString() + " query:" + query);
@@ -2043,7 +2043,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       estimateQueryContext.setLensSessionIdentifier(sessionHandle.getPublicId().toString());
       accept(query, qconf, SubmitOp.ESTIMATE);
       rewriteAndSelect(estimateQueryContext);
-      return new EstimateResult(estimateQueryContext.getSelectedDriverQueryCost());
+      return estimateQueryContext.getSelectedDriverQueryCost();
     } finally {
       release(sessionHandle);
     }

@@ -44,12 +44,11 @@ public interface QueryExecutionService {
    * @param query         The query should be in HiveQL(SQL like)
    * @param conf          The query configuration
    *
-   * @return The query cost, if no failure
-   *         The error message, incase of failure
+   * @return The query cost
    *
-   * @throws LensException the lens exception
+   * @throws LensException thrown in case of failure
    */
-  EstimateResult estimate(LensSessionHandle sessionHandle, String query, LensConf conf) throws LensException;
+  QueryCost estimate(LensSessionHandle sessionHandle, String query, LensConf conf) throws LensException;
 
   /**
    * Explain the given query.
