@@ -48,7 +48,6 @@ import org.apache.hive.service.CompositeService;
 import org.apache.hive.service.Service;
 import org.apache.hive.service.cli.CLIService;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import lombok.Setter;
@@ -407,8 +406,6 @@ public class LensServices extends CompositeService implements ServiceProvider {
   private static void initializeErrorCollection() {
     try {
       errorCollection = new ErrorCollectionFactory().createErrorCollection();
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create error collection.", e);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Could not create error collection.", e);
     }

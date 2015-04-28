@@ -26,6 +26,7 @@ import org.apache.lens.api.query.QuerySubmitResult;
 import lombok.*;
 
 /**
+ * Transport object for LensResponse
  *
  * DATA represents type of data transferred in success response.
  * PAYLOAD represents type of error payload transferred in error response.

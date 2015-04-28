@@ -34,6 +34,9 @@ import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Map of errors created from error configuration file.
+ */
 @Slf4j
 public class ErrorMap implements ErrorCollection {
 

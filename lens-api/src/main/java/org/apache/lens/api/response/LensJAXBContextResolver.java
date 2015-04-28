@@ -18,9 +18,8 @@
  */
 package org.apache.lens.api.response;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.ext.ContextResolver;
@@ -31,10 +30,13 @@ import javax.xml.bind.JAXBException;
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.ErrorCollectionFactory;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @see javax.ws.rs.ext.ContextResolver
+ */
 @Provider
 @Slf4j
 public class LensJAXBContextResolver implements ContextResolver<JAXBContext> {
@@ -53,7 +55,7 @@ public class LensJAXBContextResolver implements ContextResolver<JAXBContext> {
         if (type.equals(LensResponse.class)) {
 
           ErrorCollection errorCollection = new ErrorCollectionFactory().createErrorCollection();
-          List<Class> classesToBeBound = Lists.newLinkedList(errorCollection.getErrorPayloadClasses());
+          Set<Class> classesToBeBound = Sets.newHashSet(errorCollection.getErrorPayloadClasses());
           log.debug("classesToBeBound:{}", classesToBeBound);
           classesToBeBound.add(type);
 
@@ -68,8 +70,6 @@ public class LensJAXBContextResolver implements ContextResolver<JAXBContext> {
       } catch (JAXBException e) {
         log.error("JAXBContext not initialized for "+type, e);
       } catch (ClassNotFoundException e) {
-        log.error("JAXBContext not initialized for "+type, e);
-      } catch (IOException e) {
         log.error("JAXBContext not initialized for "+type, e);
       }
     }

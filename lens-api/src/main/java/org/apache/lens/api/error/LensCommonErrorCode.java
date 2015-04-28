@@ -19,6 +19,9 @@
 
 package org.apache.lens.api.error;
 
+/**
+ * Common error codes. Expected to be used by all concerned modules.
+ */
 public enum LensCommonErrorCode {
 
   INTERNAL_SERVER_ERROR(1001);

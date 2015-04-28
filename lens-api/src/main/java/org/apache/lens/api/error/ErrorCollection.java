@@ -18,9 +18,11 @@
  */
 package org.apache.lens.api.error;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * Interface used to interact with error collection created from error configuration file.
+ */
 public interface ErrorCollection {
 
   /**

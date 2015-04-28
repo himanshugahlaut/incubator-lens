@@ -31,7 +31,7 @@ import lombok.*;
 
 /**
  *
- * Transport object to be used to transfer error information.
+ * Transport object for lens error information.
  *
  * @param <PAYLOAD>  represents type of error payload transferred in failure lens response
  */

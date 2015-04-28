@@ -20,7 +20,6 @@ package org.apache.lens.api.error;
 
 import static javax.ws.rs.core.Response.Status;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,9 @@ import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+/**
+ * Creates ErrorCollection from error configuration file.
+ */
 public class ErrorCollectionFactory {
 
   private static final String LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION = "lens-errors";
@@ -40,7 +42,14 @@ public class ErrorCollectionFactory {
   private static final String ERROR_MSG_KEY = "errorMsg";
   private static final String PAYLOAD_CLASS_KEY = "payloadClass";
 
-  public ErrorCollection createErrorCollection() throws IOException, ClassNotFoundException {
+  /**
+   * Creates a new ErrorCollection
+   *
+   * @return ErrorCollection instance created from error configuration file.
+   * @throws ClassNotFoundException when error payload class defined in an error object in error configuration file
+   * is not present in classpath.
+   */
+  public ErrorCollection createErrorCollection() throws ClassNotFoundException {
 
     Map<Integer, LensError> errorCollection = new HashMap<Integer, LensError>();
     Config rootConfig = ConfigFactory.load(LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION);
