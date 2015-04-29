@@ -25,12 +25,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.response.LensErrorTO;
 
 import com.google.common.collect.ImmutableList;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;

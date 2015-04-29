@@ -21,7 +21,6 @@ package org.apache.lens.cube.parse;
 
 import static org.apache.hadoop.hive.ql.parse.HiveParser.*;
 
-
 import org.apache.lens.server.api.error.LensException;
 
 import org.apache.hadoop.hive.conf.HiveConf;

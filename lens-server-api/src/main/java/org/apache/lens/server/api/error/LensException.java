@@ -27,7 +27,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Arrays;
 
-
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.response.LensErrorTO;

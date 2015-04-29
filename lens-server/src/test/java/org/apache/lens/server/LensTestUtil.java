@@ -38,9 +38,7 @@ import org.apache.lens.api.response.LensResponse;
 import org.apache.lens.api.response.NoErrorPayload;
 import org.apache.lens.server.api.LensConfConstants;
 
-
 import org.apache.commons.io.FileUtils;
-
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.TableType;
 import org.apache.hadoop.hive.metastore.api.Database;
@@ -49,11 +47,9 @@ import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.metadata.Table;
 
-
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-
 import org.testng.Assert;
 
 /**

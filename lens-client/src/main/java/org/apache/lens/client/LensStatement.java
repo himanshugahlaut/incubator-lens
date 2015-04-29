@@ -29,8 +29,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.lens.api.APIResult;
 import org.apache.lens.api.query.*;
-import org.apache.lens.api.response.*;
+import org.apache.lens.api.response.LensJAXBContextResolver;
 import org.apache.lens.api.response.LensResponse;
+import org.apache.lens.api.response.NoErrorPayload;
 
 import org.apache.commons.lang.StringUtils;
 

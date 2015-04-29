@@ -37,7 +37,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
 import com.google.common.collect.Lists;
-
 import lombok.Getter;
 import lombok.Setter;
 

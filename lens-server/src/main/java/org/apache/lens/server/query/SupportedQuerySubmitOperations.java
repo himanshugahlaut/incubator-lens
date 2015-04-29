@@ -31,8 +31,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @XmlRootElement
 @EqualsAndHashCode

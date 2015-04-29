@@ -25,11 +25,14 @@ import java.util.Map;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.lens.api.*;
+import org.apache.lens.api.APIResult;
 import org.apache.lens.api.APIResult.Status;
-import org.apache.lens.server.api.error.LensException;
+import org.apache.lens.api.LensConf;
+import org.apache.lens.api.LensSessionHandle;
+import org.apache.lens.api.StringList;
 import org.apache.lens.server.LensService;
 import org.apache.lens.server.LensServices;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.session.SessionService;
 
 import org.apache.commons.logging.Log;

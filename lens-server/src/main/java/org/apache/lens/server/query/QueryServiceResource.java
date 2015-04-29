@@ -18,7 +18,8 @@
  */
 package org.apache.lens.server.query;
 
-import static org.apache.lens.server.error.LensServerErrorCode.*;
+import static org.apache.lens.server.error.LensServerErrorCode.NULL_OR_EMPTY_OR_BLANK_QUERY;
+import static org.apache.lens.server.error.LensServerErrorCode.SESSION_ID_NOT_PROVIDED;
 
 import java.util.List;
 
@@ -29,7 +30,6 @@ import javax.ws.rs.core.Response;
 import org.apache.lens.api.APIResult;
 import org.apache.lens.api.APIResult.Status;
 import org.apache.lens.api.LensConf;
-import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.LensSessionHandle;
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.query.*;
@@ -37,11 +37,11 @@ import org.apache.lens.api.response.LensResponse;
 import org.apache.lens.api.response.NoErrorPayload;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.UnSupportedQuerySubmitOpException;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

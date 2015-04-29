@@ -23,13 +23,12 @@ import static org.apache.lens.api.error.LensCommonErrorCode.INTERNAL_SERVER_ERRO
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.*;
-
+import java.util.LinkedList;
+import java.util.List;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

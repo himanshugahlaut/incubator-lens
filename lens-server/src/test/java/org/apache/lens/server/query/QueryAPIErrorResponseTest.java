@@ -25,11 +25,9 @@ import static org.apache.lens.cube.error.LensCubeErrorCode.COLUMN_UNAVAILABLE_IN
 import static org.apache.lens.cube.error.LensCubeErrorCode.SYNTAX_ERROR;
 import static org.apache.lens.server.common.RestAPITestUtil.*;
 import static org.apache.lens.server.common.TestDataUtils.*;
-import static org.apache.lens.server.common.TestDataUtils.createXFactTableWithColumns;
 import static org.apache.lens.server.error.LensServerErrorCode.*;
 
 import java.util.Arrays;
-
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
@@ -58,10 +56,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.testng.annotations.AfterTest;

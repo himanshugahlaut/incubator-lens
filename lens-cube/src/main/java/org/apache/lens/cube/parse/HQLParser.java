@@ -21,6 +21,7 @@ package org.apache.lens.cube.parse;
 import static org.apache.lens.cube.error.LensCubeErrorCode.SYNTAX_ERROR;
 
 import static org.apache.hadoop.hive.ql.parse.HiveParser.*;
+import static org.apache.hadoop.hive.ql.parse.HiveParser.Number;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

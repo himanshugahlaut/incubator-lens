@@ -31,7 +31,6 @@ import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.ErrorCollectionFactory;
 
 import com.google.common.collect.Sets;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
