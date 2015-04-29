@@ -48,7 +48,6 @@ import org.apache.hive.service.CompositeService;
 import org.apache.hive.service.Service;
 import org.apache.hive.service.cli.CLIService;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -107,7 +106,7 @@ public class LensServices extends CompositeService implements ServiceProvider {
   private final Object statePersistenceLock = new Object();
 
   @Getter
-  private static ErrorCollection errorCollection;
+  private ErrorCollection errorCollection;
 
   /**
    * The Enum SERVICE_MODE.
@@ -403,15 +402,11 @@ public class LensServices extends CompositeService implements ServiceProvider {
     return lensServices;
   }
 
-  private static void initializeErrorCollection() {
+  private void initializeErrorCollection() {
     try {
       errorCollection = new ErrorCollectionFactory().createErrorCollection();
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Could not create error collection.", e);
     }
-  }
-
-  public static ImmutableSet<Class> getErrorPayloadClasses() {
-    return errorCollection.getErrorPayloadClasses();
   }
 }
