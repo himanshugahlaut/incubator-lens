@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.lens.api.*;
 import org.apache.lens.api.APIResult.Status;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.metastore.*;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.metastore.CubeMetastoreService;
@@ -85,7 +86,7 @@ public class MetastoreResource {
    *
    * @param sessionid The sessionid in which user is working
    * @return StringList consisting of all database names.
-   * @throws LensException
+   * @throws org.apache.lens.server.api.error.LensException
    */
   @GET
   @Path("databases")

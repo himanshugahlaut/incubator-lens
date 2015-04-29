@@ -25,7 +25,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import org.apache.lens.api.LensConf;
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.Priority;
 import org.apache.lens.api.query.QueryCost;
 import org.apache.lens.api.query.QueryHandle;

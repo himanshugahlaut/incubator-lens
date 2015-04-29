@@ -20,7 +20,7 @@ package org.apache.lens.ml.algo.spark.lr;
 
 import java.util.Map;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.ml.algo.api.AlgoParam;
 import org.apache.lens.ml.algo.api.Algorithm;
 import org.apache.lens.ml.algo.spark.BaseSparkAlgo;

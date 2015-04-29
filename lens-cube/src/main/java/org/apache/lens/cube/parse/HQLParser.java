@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.Context;

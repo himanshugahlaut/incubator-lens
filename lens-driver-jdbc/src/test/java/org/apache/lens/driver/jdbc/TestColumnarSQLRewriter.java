@@ -25,7 +25,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.cube.parse.HQLParser;
 import org.apache.lens.server.api.LensConfConstants;
 

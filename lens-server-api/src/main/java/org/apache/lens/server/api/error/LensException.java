@@ -19,13 +19,14 @@
 /*
  *
  */
-package org.apache.lens.api;
+package org.apache.lens.server.api.error;
 
 import static org.apache.lens.api.error.LensCommonErrorCode.INTERNAL_SERVER_ERROR;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Arrays;
+
 
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.LensError;
@@ -51,7 +52,7 @@ public class LensException extends Exception {
   private Object[] errorMsgFormattingArgs = new Object[0];
 
   /**
-   * The lensResponse instance initialized by {@link #buildLensErrorResponse(ErrorCollection, String, String)}
+   * The lensResponse prepared by {@link #buildLensErrorResponse(ErrorCollection, String, String)}
    * */
   @Getter
   private LensResponse lensResponse;

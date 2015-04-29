@@ -20,10 +20,10 @@ package org.apache.lens.cube.error;
 
 import static org.apache.lens.cube.error.LensCubeErrorCode.COLUMN_UNAVAILABLE_IN_TIME_RANGE;
 
-import org.apache.lens.api.LensException;
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.response.LensErrorTO;
+import org.apache.lens.server.api.error.LensException;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;

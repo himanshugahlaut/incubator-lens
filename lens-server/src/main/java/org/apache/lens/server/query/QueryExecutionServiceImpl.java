@@ -34,9 +34,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.lens.api.LensConf;
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.LensSessionHandle;
-import org.apache.lens.api.error.LensMultiCauseException;
+import org.apache.lens.server.api.error.LensMultiCauseException;
 import org.apache.lens.api.query.*;
 import org.apache.lens.api.query.QueryStatus.Status;
 import org.apache.lens.driver.cube.RewriteUtil;

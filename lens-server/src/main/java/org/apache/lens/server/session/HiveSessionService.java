@@ -31,7 +31,7 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.LensSessionHandle;
 import org.apache.lens.server.LensService;
 import org.apache.lens.server.LensServices;

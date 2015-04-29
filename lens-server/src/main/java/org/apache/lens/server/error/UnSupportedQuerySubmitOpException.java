@@ -20,7 +20,7 @@ package org.apache.lens.server.error;
 
 import static org.apache.lens.server.error.LensServerErrorCode.UNSUPPORTED_QUERY_SUBMIT_OPERATION;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.LensError;
 import org.apache.lens.api.response.LensErrorTO;

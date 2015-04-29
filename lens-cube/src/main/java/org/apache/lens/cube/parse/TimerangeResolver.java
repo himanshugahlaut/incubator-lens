@@ -22,7 +22,6 @@ import static org.apache.hadoop.hive.ql.parse.HiveParser.*;
 
 import java.util.*;
 
-import org.apache.lens.api.LensException;
 import org.apache.lens.cube.error.ColUnAvailableInTimeRange;
 import org.apache.lens.cube.error.ColUnAvailableInTimeRangeException;
 import org.apache.lens.cube.metadata.AbstractCubeTable;
@@ -30,6 +29,7 @@ import org.apache.lens.cube.metadata.CubeColumn;
 import org.apache.lens.cube.metadata.Dimension;
 import org.apache.lens.cube.metadata.SchemaGraph;
 import org.apache.lens.cube.parse.DenormalizationResolver.ReferencedQueriedColumn;
+import org.apache.lens.server.api.error.LensException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

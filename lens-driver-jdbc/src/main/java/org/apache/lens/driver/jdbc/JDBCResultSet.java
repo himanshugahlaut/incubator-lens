@@ -25,7 +25,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.query.ResultRow;
 import org.apache.lens.driver.jdbc.JDBCDriver.QueryResult;
 import org.apache.lens.server.api.driver.InMemoryResultSet;

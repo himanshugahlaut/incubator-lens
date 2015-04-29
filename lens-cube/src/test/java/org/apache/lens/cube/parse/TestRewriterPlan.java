@@ -24,8 +24,8 @@ import static org.apache.lens.cube.parse.CubeTestSetup.TWO_DAYS_RANGE;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.apache.lens.api.LensException;
 import org.apache.lens.driver.cube.RewriterPlan;
+import org.apache.lens.server.api.error.LensException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.ql.parse.ParseException;

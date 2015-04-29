@@ -18,7 +18,7 @@
  */
 package org.apache.lens.server.query;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.api.query.QueryStatus;
 import org.apache.lens.server.api.events.AsyncEventListener;

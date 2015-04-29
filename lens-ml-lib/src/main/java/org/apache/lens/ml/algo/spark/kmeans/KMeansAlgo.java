@@ -21,7 +21,7 @@ package org.apache.lens.ml.algo.spark.kmeans;
 import java.util.List;
 
 import org.apache.lens.api.LensConf;
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.ml.algo.api.*;
 import org.apache.lens.ml.algo.lib.AlgoArgParser;
 import org.apache.lens.ml.algo.spark.HiveTableRDD;

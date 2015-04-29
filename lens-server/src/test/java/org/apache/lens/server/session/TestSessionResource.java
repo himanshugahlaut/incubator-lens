@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.lens.api.*;
 import org.apache.lens.api.APIResult.Status;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.LensJerseyTest;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.LensConfConstants;
@@ -264,7 +265,7 @@ public class TestSessionResource extends LensJerseyTest {
   /**
    * Test aux jars.
    *
-   * @throws LensException the lens exception
+   * @throws org.apache.lens.server.api.error.LensException the lens exception
    */
   @Test
   public void testAuxJars() throws LensException, IOException, LenServerTestException {

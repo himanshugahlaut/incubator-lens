@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.api.error;
+package org.apache.lens.server.api.error;
 
 import static org.apache.lens.api.error.LensCommonErrorCode.INTERNAL_SERVER_ERROR;
 
@@ -25,7 +25,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.lens.api.LensException;
+
+import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.response.LensErrorTO;
 
 import com.google.common.collect.ImmutableList;

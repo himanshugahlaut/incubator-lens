@@ -26,7 +26,7 @@ import java.util.*;
 
 import javax.ws.rs.NotFoundException;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.LensSessionHandle;
 import org.apache.lens.cube.metadata.CubeMetastoreClient;
 import org.apache.lens.server.LensServices;

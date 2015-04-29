@@ -27,7 +27,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.LensConfConstants;
 
 import org.apache.commons.io.IOUtils;

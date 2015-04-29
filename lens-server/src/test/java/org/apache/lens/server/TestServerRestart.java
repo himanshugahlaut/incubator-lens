@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.lens.api.*;
 import org.apache.lens.api.APIResult.Status;
-import org.apache.lens.api.LensException;
+import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.api.query.LensQuery;
 import org.apache.lens.api.query.PersistentQueryResult;
 import org.apache.lens.api.query.QueryHandle;

@@ -24,8 +24,8 @@ import static org.apache.lens.cube.parse.CubeTestSetup.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lens.api.LensException;
 import org.apache.lens.cube.metadata.StorageConstants;
+import org.apache.lens.server.api.error.LensException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.ql.ErrorMsg;
