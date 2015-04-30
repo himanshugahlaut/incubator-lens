@@ -353,7 +353,7 @@ public class MetastoreResource {
       messages.add(e.getCause().getMessage());
     }
     for (String message : messages) {
-      if (message.startsWith("Could not get table")) {
+      if (message != null && message.startsWith("Could not get table")) {
         throw new NotFoundException("Table not found " + table, e);
       }
     }
