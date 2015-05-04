@@ -34,7 +34,8 @@ import com.typesafe.config.ConfigFactory;
  */
 public class ErrorCollectionFactory {
 
-  private static final String LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION = "lens-errors";
+  private static final String LENS_ERROR_FILE_NAME = "lens-errors";
+  private static final String LENS_ERRORS_OVERRIDE_FILE_NAME = "lens-errors-override";
   private static final String ERRORS_ARRAY_NAME = "errors";
   private static final String ERROR_CODE_KEY = "errorCode";
   private static final String HTTP_STATUS_CODE_KEY = "httpStatusCode";
@@ -42,7 +43,7 @@ public class ErrorCollectionFactory {
   private static final String PAYLOAD_CLASS_KEY = "payloadClass";
 
   /**
-   * Creates a new ErrorCollection
+   * Creates a new ErrorCollection from lens-errors.conf file overriding it with lens-errors-override.conf file.
    *
    * @return ErrorCollection instance created from error configuration file.
    * @throws ClassNotFoundException when error payload class defined in an error object in error configuration file
@@ -51,8 +52,10 @@ public class ErrorCollectionFactory {
   public ErrorCollection createErrorCollection() throws ClassNotFoundException {
 
     Map<Integer, LensError> errorCollection = new HashMap<Integer, LensError>();
-    Config rootConfig = ConfigFactory.load(LENS_ERROR_FILE_NAME_WITHOUT_EXTENSION);
-    List<? extends Config> configList = rootConfig.getConfigList(ERRORS_ARRAY_NAME);
+
+    Config baseConfig = ConfigFactory.load(LENS_ERROR_FILE_NAME);
+    Config usedConfig = ConfigFactory.load(LENS_ERRORS_OVERRIDE_FILE_NAME).withFallback(baseConfig);
+    List<? extends Config> configList = usedConfig.getConfigList(ERRORS_ARRAY_NAME);
 
     for (final Config config : configList) {
 
