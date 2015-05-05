@@ -78,4 +78,3 @@ public class ErrorCollectionFactory {
     return new ErrorMap(immutableMap);
   }
 }
-

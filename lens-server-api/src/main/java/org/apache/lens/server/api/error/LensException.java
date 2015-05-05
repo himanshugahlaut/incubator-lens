@@ -161,12 +161,18 @@ public class LensException extends Exception {
     return buildLensErrorTO(errorCollection, formattedErrorMsg, stackTrace);
   }
 
-  public boolean equals(final LensException e) {
+  @Override
+  public boolean equals(final Object o) {
 
-    if (this == e) {
+    if (this == o) {
       return true;
     }
 
+    if (!(o instanceof LensException)) {
+      return false;
+    }
+
+    LensException e = (LensException) o;
     if (errorCode == e.errorCode && isErrorMsgEqual(e)
         && Arrays.deepEquals(errorMsgFormattingArgs, e.errorMsgFormattingArgs)) {
       return true;
