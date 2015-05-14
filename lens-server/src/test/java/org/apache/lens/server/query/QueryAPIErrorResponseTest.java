@@ -44,6 +44,7 @@ import org.apache.lens.api.metastore.XFactTable;
 import org.apache.lens.api.response.LensErrorTO;
 import org.apache.lens.api.response.LensJAXBContextResolver;
 import org.apache.lens.cube.error.ColUnAvailableInTimeRange;
+import org.apache.lens.server.InitialRequestFilter;
 import org.apache.lens.server.LensJerseyTest;
 import org.apache.lens.server.common.ErrorResponseExpectedData;
 import org.apache.lens.server.error.LensExceptionMapper;
@@ -89,8 +90,8 @@ public class QueryAPIErrorResponseTest extends LensJerseyTest {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
 
-    return new ResourceConfig(SessionResource.class, MetastoreResource.class, QueryServiceResource.class,
-        MultiPartFeature.class, LensExceptionMapper.class, LensJAXBContextResolver.class);
+    return new ResourceConfig(InitialRequestFilter.class, SessionResource.class, MetastoreResource.class,
+        QueryServiceResource.class, MultiPartFeature.class, LensExceptionMapper.class, LensJAXBContextResolver.class);
   }
 
   @Override

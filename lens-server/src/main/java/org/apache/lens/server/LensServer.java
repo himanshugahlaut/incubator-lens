@@ -20,16 +20,14 @@ package org.apache.lens.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.lens.api.response.LensJAXBContextResolver;
 import org.apache.lens.server.api.LensConfConstants;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.metrics.MetricsService;
 import org.apache.lens.server.error.LensExceptionMapper;
 import org.apache.lens.server.metrics.MetricsServiceImpl;
@@ -45,6 +43,7 @@ import org.glassfish.grizzly.servlet.WebappContext;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.MDC;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.codahale.metrics.servlets.AdminServlet;
@@ -113,6 +112,7 @@ public class LensServer {
   }
 
   private ResourceConfig getApp() {
+
     ResourceConfig app = ResourceConfig.forApplicationClass(LensApplication.class);
     app.register(new LoggingFilter(Logger.getLogger(LensServer.class.getName() + ".request"), true));
     app.register(LensExceptionMapper.class);
@@ -184,6 +184,9 @@ public class LensServer {
    * @throws Exception the exception
    */
   public static void main(String[] args) throws Exception {
+
+    final String runId = UUID.randomUUID().toString();
+    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
 
     printStartupMessage();
     try {

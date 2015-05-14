@@ -153,6 +153,10 @@ public class PreparedQueryContext extends AbstractQueryContext implements Delaye
       lensConf);
   }
 
+  public String getQueryHandleString() {
+    return prepareHandle.getQueryHandleString();
+  }
+
   /**
    * Get prepared query handle string
    * @return

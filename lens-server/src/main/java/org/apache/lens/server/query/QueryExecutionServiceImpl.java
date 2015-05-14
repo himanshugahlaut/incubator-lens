@@ -43,6 +43,7 @@ import org.apache.lens.server.LensServerConf;
 import org.apache.lens.server.LensService;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.LensConfConstants;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.*;
 import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.error.LensMultiCauseException;
@@ -72,7 +73,10 @@ import org.codehaus.jackson.*;
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.map.module.SimpleModule;
 
+import org.slf4j.MDC;
+
 import com.google.common.collect.ImmutableList;
+
 import lombok.Getter;
 
 /**
@@ -453,6 +457,10 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
     public QueryContext getCtx() {
       return ctx;
     }
+
+    public String getQueryHandleString() {
+      return ctx.getQueryHandleString();
+    }
   }
 
   /**
@@ -476,6 +484,10 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       while (!pausedForTest && !stopped && !querySubmitter.isInterrupted()) {
         try {
           QueryContext ctx = queuedQueries.take();
+
+          /* Setting log segregation id */
+          MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
+
           synchronized (ctx) {
             if (ctx.getStatus().getStatus().equals(Status.QUEUED)) {
               LOG.info("Launching query:" + ctx.getUserQuery());
@@ -550,6 +562,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
             if (stopped || statusPoller.isInterrupted()) {
               return;
             }
+            MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
             LOG.info("Polling status for " + ctx.getQueryHandle());
             try {
               // session is not required to update status of the query
@@ -759,6 +772,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
         FinishedQuery finished = null;
         try {
           finished = finishedQueries.take();
+          MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), finished.getQueryHandleString());
         } catch (InterruptedException e) {
           LOG.info("QueryPurger has been interrupted, exiting");
           return;
@@ -832,6 +846,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       while (!stopped && !prepareQueryPurger.isInterrupted()) {
         try {
           PreparedQueryContext prepared = preparedQueryQueue.take();
+          MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), prepared.getQueryHandleString());
           destroyPreparedQuery(prepared);
           LOG.info("Purged prepared query: " + prepared.getPrepareHandle());
         } catch (LensException e) {

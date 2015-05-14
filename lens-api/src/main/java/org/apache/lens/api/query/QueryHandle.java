@@ -74,6 +74,10 @@ public class QueryHandle extends QuerySubmitResult implements Serializable {
     return new QueryHandle(UUID.fromString(handle));
   }
 
+  public String getHandleIdString() {
+    return handleId.toString();
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -81,6 +85,6 @@ public class QueryHandle extends QuerySubmitResult implements Serializable {
    */
   @Override
   public String toString() {
-    return handleId.toString();
+    return getHandleIdString();
   }
 }

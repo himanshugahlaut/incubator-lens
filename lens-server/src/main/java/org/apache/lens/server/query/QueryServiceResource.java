@@ -37,6 +37,7 @@ import org.apache.lens.api.response.LensResponse;
 import org.apache.lens.api.response.NoErrorPayload;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.UnSupportedQuerySubmitOpException;
@@ -46,6 +47,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.MDC;
 
 /**
  * queryapi resource
@@ -203,8 +205,9 @@ public class QueryServiceResource {
       @FormDataParam("conf") LensConf conf, @DefaultValue("30000") @FormDataParam("timeoutmillis") Long timeoutmillis,
       @DefaultValue("") @FormDataParam("queryName") String queryName) throws LensException {
 
-    try {
+    final String requestId = MDC.get(Constant.LOG_SEGREGATION_ID.getValue());
 
+    try {
       validateSessionId(sessionid);
       SubmitOp sop = checkAndGetQuerySubmitOperation(operation);
       validateQuery(query);
@@ -226,9 +229,10 @@ public class QueryServiceResource {
       default:
         throw new UnSupportedQuerySubmitOpException();
       }
-      return LensResponse.composedOf(null, null, result);
+
+      return LensResponse.composedOf(null, requestId, result);
     } catch (LensException e) {
-      e.buildLensErrorResponse(errorCollection, null, null);
+      e.buildLensErrorResponse(errorCollection, null, requestId);
       throw e;
     }
   }
