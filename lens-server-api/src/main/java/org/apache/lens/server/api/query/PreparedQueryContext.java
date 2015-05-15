@@ -153,7 +153,6 @@ public class PreparedQueryContext extends AbstractQueryContext implements Delaye
       lensConf);
   }
 
-  @Override
   public String getQueryHandleString() {
     return prepareHandle.getQueryHandleString();
   }

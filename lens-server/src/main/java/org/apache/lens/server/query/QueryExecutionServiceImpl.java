@@ -1176,8 +1176,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
     @Override
     public void run() {
       try {
-
-        MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
+        
         acquire(ctx.getLensSessionIdentifier());
         MethodMetricsContext rewriteGauge = MethodMetricsFactory.createMethodGauge(ctx.getDriverConf(driver), true,
           REWRITE_GAUGE);

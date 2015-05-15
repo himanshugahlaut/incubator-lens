@@ -69,7 +69,7 @@ public class StatisticsLogFileScannerTask extends TimerTask {
   @Override
   public void run() {
     try {
-      
+
       final String runId = UUID.randomUUID().toString();
       MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
 
