@@ -49,7 +49,8 @@ public interface QueryExecutionService {
    *
    * @throws LensException thrown in case of failure
    */
-  QueryCost estimate(final String requestId, LensSessionHandle sessionHandle, String query, LensConf conf) throws LensException;
+  QueryCost estimate(final String requestId, LensSessionHandle sessionHandle, String query, LensConf conf)
+      throws LensException;
 
   /**
    * Explain the given query.
@@ -61,7 +62,8 @@ public interface QueryExecutionService {
    * @return The query plan;
    * @throws LensException the lens exception
    */
-  QueryPlan explain(final String requestId, LensSessionHandle sessionHandle, String query, LensConf conf) throws LensException;
+  QueryPlan explain(final String requestId, LensSessionHandle sessionHandle, String query, LensConf conf)
+      throws LensException;
 
   /**
    * Prepare the query.
