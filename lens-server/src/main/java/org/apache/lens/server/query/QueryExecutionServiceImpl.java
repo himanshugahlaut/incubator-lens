@@ -2057,7 +2057,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
    */
   @Override
   public QueryPlan explain(final String requestId, LensSessionHandle sessionHandle, String query, LensConf lensConf)
-      throws LensException {
+    throws LensException {
     try {
       LOG.info("Explain: " + sessionHandle.toString() + " query:" + query);
       acquire(sessionHandle);

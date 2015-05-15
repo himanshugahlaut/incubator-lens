@@ -29,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.query.QueryCost;
 import org.apache.lens.server.api.LensConfConstants;
-import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.DriverQueryPlan;
 import org.apache.lens.server.api.driver.LensDriver;
 import org.apache.lens.server.api.error.LensException;

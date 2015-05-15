@@ -128,7 +128,8 @@ public class TestJdbcDriver {
   }
 
   protected ExplainQueryContext createExplainContext(final String query, Configuration conf) {
-    ExplainQueryContext ectx = new ExplainQueryContext(UUID.randomUUID().toString(), query, "testuser", null, conf, drivers);
+    ExplainQueryContext ectx = new ExplainQueryContext(UUID.randomUUID().toString(), query, "testuser", null, conf,
+        drivers);
     return ectx;
   }
 
