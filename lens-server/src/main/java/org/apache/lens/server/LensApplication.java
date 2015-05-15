@@ -74,7 +74,7 @@ public class LensApplication extends Application {
       LOG.info("Added filter " + wsFilterClass);
     }
 
-    LOG.info("InitialRequestFilter added...");
+    LOG.debug("InitialRequestFilter added...");
     classes.add(InitialRequestFilter.class);
 
     return classes;

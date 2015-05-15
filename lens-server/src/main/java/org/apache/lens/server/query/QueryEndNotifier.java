@@ -33,6 +33,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.lens.api.query.QueryStatus;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.LensConfConstants;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.events.AsyncEventListener;
 import org.apache.lens.server.api.metrics.MetricsService;
 import org.apache.lens.server.api.query.QueryContext;
@@ -42,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.log4j.MDC;
 
 import lombok.Data;
 
@@ -112,6 +114,7 @@ public class QueryEndNotifier extends AsyncEventListener<QueryEnded> {
         + ". No email generated");
       return;
     }
+    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), queryContext.getQueryHandleString());
 
     boolean whetherMailNotify = Boolean.parseBoolean(queryContext.getConf().get(LensConfConstants.QUERY_MAIL_NOTIFY,
       LensConfConstants.WHETHER_MAIL_NOTIFY_DEFAULT));

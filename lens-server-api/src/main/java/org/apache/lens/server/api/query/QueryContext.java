@@ -400,8 +400,8 @@ public class QueryContext extends AbstractQueryContext implements Comparable<Que
     return getQueryHandleString();
   }
 
+  @Override
   public String getQueryHandleString() {
-
     return queryHandle.getHandleIdString();
   }
 }

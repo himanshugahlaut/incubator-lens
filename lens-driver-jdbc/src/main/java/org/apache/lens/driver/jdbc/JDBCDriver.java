@@ -37,6 +37,7 @@ import org.apache.lens.api.query.QueryCost;
 import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.api.query.QueryPrepareHandle;
 import org.apache.lens.cube.parse.HQLParser;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.*;
 import org.apache.lens.server.api.driver.DriverQueryStatus.DriverQueryState;
 import org.apache.lens.server.api.error.LensException;
@@ -54,6 +55,7 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -182,6 +184,10 @@ public class JDBCDriver implements LensDriver {
       }
       isClosed = true;
     }
+
+    public String getQueryHandleString() {
+      return this.lensContext.getQueryHandleString();
+    }
   }
 
   /**
@@ -279,6 +285,7 @@ public class JDBCDriver implements LensDriver {
      */
     @Override
     public QueryResult call() {
+      MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), this.queryContext.getQueryHandleString());
       Statement stmt = null;
       Connection conn = null;
       QueryResult result = new QueryResult();

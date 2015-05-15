@@ -30,6 +30,7 @@ import java.util.*;
 import org.apache.lens.api.error.ErrorCollection;
 import org.apache.lens.api.error.ErrorCollectionFactory;
 import org.apache.lens.server.api.ServiceProvider;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.events.LensEventService;
 import org.apache.lens.server.api.metrics.MetricsService;
 import org.apache.lens.server.metrics.MetricsServiceImpl;
@@ -47,6 +48,8 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hive.service.CompositeService;
 import org.apache.hive.service.Service;
 import org.apache.hive.service.cli.CLIService;
+
+import org.slf4j.MDC;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -244,6 +247,8 @@ public class LensServices extends CompositeService implements ServiceProvider {
       @Override
       public void run() {
         try {
+          final String runId = UUID.randomUUID().toString();
+          MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
           persistLensServiceState();
           LOG.info("SnapShot of Lens Services created");
         } catch (IOException e) {

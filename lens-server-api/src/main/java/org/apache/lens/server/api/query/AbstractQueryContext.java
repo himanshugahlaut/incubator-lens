@@ -28,7 +28,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.lens.api.LensConf;
 import org.apache.lens.api.query.QueryCost;
+import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.server.api.LensConfConstants;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.DriverQueryPlan;
 import org.apache.lens.server.api.driver.LensDriver;
 import org.apache.lens.server.api.error.LensException;
@@ -37,6 +39,7 @@ import org.apache.lens.server.api.metrics.MethodMetricsFactory;
 import org.apache.lens.server.api.query.DriverSelectorQueryContext.DriverQueryContext;
 import org.apache.lens.server.api.util.LensUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -457,5 +460,9 @@ public abstract class AbstractQueryContext implements Serializable {
   public void clearTransientStateAfterCompleted() {
     driverContext.clearTransientStateAfterCompleted();
     hiveConf = null;
+  }
+
+  public String getQueryHandleString() {
+    return Constant.QUERY_HANDLE_NOT_AVAILABLE.getValue();
   }
 }

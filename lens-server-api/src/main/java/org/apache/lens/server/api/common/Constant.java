@@ -21,7 +21,8 @@ package org.apache.lens.server.api.common;
 public enum Constant {
 
   REQUEST_ID("requestId"),
-  LOG_SEGREGATION_ID("logSegregationId");
+  LOG_SEGREGATION_ID("logSegregationId"),
+  QUERY_HANDLE_NOT_AVAILABLE("query handle not available");
 
   Constant(final String value) {
     this.value = value;

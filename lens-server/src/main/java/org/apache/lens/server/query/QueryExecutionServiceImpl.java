@@ -1017,6 +1017,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
       }
     };
 
+    LOG.debug("starting estimate pool");
     ThreadPoolExecutor estimatePool = new ThreadPoolExecutor(minPoolSize, maxPoolSize, keepAlive, TimeUnit.MILLISECONDS,
       new LinkedBlockingQueue<Runnable>(), threadFactory);
     estimatePool.allowCoreThreadTimeOut(true);
@@ -1175,6 +1176,8 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
     @Override
     public void run() {
       try {
+
+        MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
         acquire(ctx.getLensSessionIdentifier());
         MethodMetricsContext rewriteGauge = MethodMetricsFactory.createMethodGauge(ctx.getDriverConf(driver), true,
           REWRITE_GAUGE);

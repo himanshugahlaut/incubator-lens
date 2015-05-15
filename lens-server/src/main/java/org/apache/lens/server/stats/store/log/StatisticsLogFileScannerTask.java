@@ -23,15 +23,18 @@ import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.lens.server.LensServices;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.events.LensEventService;
 import org.apache.lens.server.api.metrics.MetricsService;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +69,10 @@ public class StatisticsLogFileScannerTask extends TimerTask {
   @Override
   public void run() {
     try {
+      
+      final String runId = UUID.randomUUID().toString();
+      MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
+
       for (Map.Entry<String, String> entry : scanSet.entrySet()) {
         File f = new File(entry.getValue()).getAbsoluteFile();
         String fileName = f.getAbsolutePath();

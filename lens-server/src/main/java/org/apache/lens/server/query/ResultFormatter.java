@@ -21,6 +21,7 @@ package org.apache.lens.server.query;
 import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.LensConfConstants;
+import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.InMemoryResultSet;
 import org.apache.lens.server.api.driver.LensResultSet;
 import org.apache.lens.server.api.driver.PersistentResultSet;
@@ -34,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ReflectionUtils;
+import org.apache.log4j.MDC;
 
 /**
  * The Class ResultFormatter.
@@ -73,6 +75,7 @@ public class ResultFormatter extends AsyncEventListener<QueryExecuted> {
   private void formatOutput(QueryExecuted event) {
     QueryHandle queryHandle = event.getQueryHandle();
     QueryContext ctx = queryService.getQueryContext(queryHandle);
+    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
     try {
       if (!ctx.isPersistent()) {
         LOG.info("No result formatting required for query " + queryHandle);
