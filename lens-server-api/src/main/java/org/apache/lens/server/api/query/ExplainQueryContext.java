@@ -31,14 +31,21 @@ import org.apache.hadoop.conf.Configuration;
 public class ExplainQueryContext extends AbstractQueryContext {
   private static final long serialVersionUID = 1L;
 
+  private final String requestId;
   /**
    * Constructor. Only needs user query and conf.
    *
    * @param query
    * @param qconf
    */
-  public ExplainQueryContext(String query, final String user, LensConf conf, Configuration qconf,
+  public ExplainQueryContext(final String requestId, String query, final String user, LensConf conf, Configuration qconf,
       Collection<LensDriver> drivers) {
     super(query, user, conf, qconf, drivers, true);
+    this.requestId = requestId;
+  }
+
+  @Override
+  public String getLogHandle() {
+    return this.requestId;
   }
 }

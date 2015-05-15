@@ -215,13 +215,13 @@ public class QueryServiceResource {
       QuerySubmitResult result;
       switch (sop) {
       case ESTIMATE:
-        result = queryServer.estimate(sessionid, query, conf);
+        result = queryServer.estimate(requestId, sessionid, query, conf);
         break;
       case EXECUTE:
         result = queryServer.executeAsync(sessionid, query, conf, queryName);
         break;
       case EXPLAIN:
-        result = queryServer.explain(sessionid, query, conf);
+        result = queryServer.explain(requestId, sessionid, query, conf);
         break;
       case EXECUTE_WITH_TIMEOUT:
         result = queryServer.execute(sessionid, query, timeoutmillis, conf, queryName);

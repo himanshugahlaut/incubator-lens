@@ -163,6 +163,6 @@ public class PreparedQueryContext extends AbstractQueryContext implements Delaye
    */
   @Override
   public String getLogHandle() {
-    return prepareHandle.getPrepareHandleId().toString();
+    return getQueryHandleString();
   }
 }

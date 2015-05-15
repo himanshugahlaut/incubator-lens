@@ -1176,7 +1176,7 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
     @Override
     public void run() {
       try {
-        
+        MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getLogHandle());
         acquire(ctx.getLensSessionIdentifier());
         MethodMetricsContext rewriteGauge = MethodMetricsFactory.createMethodGauge(ctx.getDriverConf(driver), true,
           REWRITE_GAUGE);
@@ -2032,13 +2032,13 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
    * java.lang.String, org.apache.lens.api.LensConf)
    */
   @Override
-  public QueryCost estimate(LensSessionHandle sessionHandle, String query, LensConf lensConf)
+  public QueryCost estimate(final String requestId, LensSessionHandle sessionHandle, String query, LensConf lensConf)
     throws LensException {
     try {
       LOG.info("Estimate: " + sessionHandle.toString() + " query:" + query);
       acquire(sessionHandle);
       Configuration qconf = getLensConf(sessionHandle, lensConf);
-      ExplainQueryContext estimateQueryContext = new ExplainQueryContext(query,
+      ExplainQueryContext estimateQueryContext = new ExplainQueryContext(requestId, query,
         getSession(sessionHandle).getLoggedInUser(), lensConf, qconf, drivers.values());
       estimateQueryContext.setLensSessionIdentifier(sessionHandle.getPublicId().toString());
       accept(query, qconf, SubmitOp.ESTIMATE);
@@ -2056,12 +2056,12 @@ public class QueryExecutionServiceImpl extends LensService implements QueryExecu
    * java.lang.String, org.apache.lens.api.LensConf)
    */
   @Override
-  public QueryPlan explain(LensSessionHandle sessionHandle, String query, LensConf lensConf) throws LensException {
+  public QueryPlan explain(final String requestId, LensSessionHandle sessionHandle, String query, LensConf lensConf) throws LensException {
     try {
       LOG.info("Explain: " + sessionHandle.toString() + " query:" + query);
       acquire(sessionHandle);
       Configuration qconf = getLensConf(sessionHandle, lensConf);
-      ExplainQueryContext explainQueryContext = new ExplainQueryContext(query,
+      ExplainQueryContext explainQueryContext = new ExplainQueryContext(requestId, query,
         getSession(sessionHandle).getLoggedInUser(), lensConf, qconf, drivers.values());
       explainQueryContext.setLensSessionIdentifier(sessionHandle.getPublicId().toString());
       accept(query, qconf, SubmitOp.EXPLAIN);
