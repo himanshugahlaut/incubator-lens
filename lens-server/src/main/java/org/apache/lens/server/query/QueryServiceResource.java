@@ -37,17 +37,16 @@ import org.apache.lens.api.response.LensResponse;
 import org.apache.lens.api.response.NoErrorPayload;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.annotations.MultiPurposeResource;
-import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.query.QueryExecutionService;
 import org.apache.lens.server.error.UnSupportedQuerySubmitOpException;
+import org.apache.lens.server.model.LogSegregationContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.MDC;
 
 /**
  * queryapi resource
@@ -64,6 +63,8 @@ public class QueryServiceResource {
   private QueryExecutionService queryServer;
 
   private final ErrorCollection errorCollection;
+
+  private final LogSegregationContext logSegregationContext;
 
   /**
    * Check session id.
@@ -127,6 +128,7 @@ public class QueryServiceResource {
   public QueryServiceResource() throws LensException {
     queryServer = (QueryExecutionService) LensServices.get().getService("query");
     errorCollection = LensServices.get().getErrorCollection();
+    logSegregationContext = LensServices.get().getLogSegregationContext();
   }
 
   QueryExecutionService getQueryServer() {
@@ -205,7 +207,7 @@ public class QueryServiceResource {
       @FormDataParam("conf") LensConf conf, @DefaultValue("30000") @FormDataParam("timeoutmillis") Long timeoutmillis,
       @DefaultValue("") @FormDataParam("queryName") String queryName) throws LensException {
 
-    final String requestId = MDC.get(Constant.LOG_SEGREGATION_ID.getValue());
+    final String requestId = this.logSegregationContext.get();
 
     try {
       validateSessionId(sessionid);

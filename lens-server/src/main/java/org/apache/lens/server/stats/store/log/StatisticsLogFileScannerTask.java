@@ -27,17 +27,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.lens.server.LensServices;
-import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.events.LensEventService;
 import org.apache.lens.server.api.metrics.MetricsService;
+import org.apache.lens.server.model.LogSegregationContext;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
 
 import org.slf4j.LoggerFactory;
 
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -61,6 +61,11 @@ public class StatisticsLogFileScannerTask extends TimerTask {
   /** The class set. */
   private Map<String, String> classSet = new ConcurrentHashMap<String, String>();
 
+  private final LogSegregationContext logSegregationContext;
+
+  public StatisticsLogFileScannerTask(@NonNull final LogSegregationContext logSegregationContext) {
+    this.logSegregationContext = logSegregationContext;
+  }
   /*
    * (non-Javadoc)
    *
@@ -71,7 +76,7 @@ public class StatisticsLogFileScannerTask extends TimerTask {
     try {
 
       final String runId = UUID.randomUUID().toString();
-      MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
+      this.logSegregationContext.set(runId);
 
       for (Map.Entry<String, String> entry : scanSet.entrySet()) {
         File f = new File(entry.getValue()).getAbsoluteFile();

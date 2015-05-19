@@ -21,7 +21,6 @@ package org.apache.lens.server.query;
 import org.apache.lens.api.query.QueryHandle;
 import org.apache.lens.server.LensServices;
 import org.apache.lens.server.api.LensConfConstants;
-import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.driver.InMemoryResultSet;
 import org.apache.lens.server.api.driver.LensResultSet;
 import org.apache.lens.server.api.driver.PersistentResultSet;
@@ -29,13 +28,15 @@ import org.apache.lens.server.api.error.LensException;
 import org.apache.lens.server.api.events.AsyncEventListener;
 import org.apache.lens.server.api.metrics.MetricsService;
 import org.apache.lens.server.api.query.*;
+import org.apache.lens.server.model.LogSegregationContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ReflectionUtils;
-import org.apache.log4j.MDC;
+
+import lombok.NonNull;
 
 /**
  * The Class ResultFormatter.
@@ -48,13 +49,16 @@ public class ResultFormatter extends AsyncEventListener<QueryExecuted> {
   /** The query service. */
   QueryExecutionServiceImpl queryService;
 
+  private final LogSegregationContext logSegregationContext;
+
   /**
    * Instantiates a new result formatter.
    *
    * @param queryService the query service
    */
-  public ResultFormatter(QueryExecutionServiceImpl queryService) {
+  public ResultFormatter(QueryExecutionServiceImpl queryService, @NonNull LogSegregationContext logSegregationContext) {
     this.queryService = queryService;
+    this.logSegregationContext = logSegregationContext;
   }
 
   /*
@@ -75,7 +79,7 @@ public class ResultFormatter extends AsyncEventListener<QueryExecuted> {
   private void formatOutput(QueryExecuted event) {
     QueryHandle queryHandle = event.getQueryHandle();
     QueryContext ctx = queryService.getQueryContext(queryHandle);
-    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), ctx.getQueryHandleString());
+    this.logSegregationContext.set(ctx.getQueryHandleString());
     try {
       if (!ctx.isPersistent()) {
         LOG.info("No result formatting required for query " + queryHandle);

@@ -27,10 +27,10 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.lens.api.response.LensJAXBContextResolver;
 import org.apache.lens.server.api.LensConfConstants;
-import org.apache.lens.server.api.common.Constant;
 import org.apache.lens.server.api.metrics.MetricsService;
 import org.apache.lens.server.error.LensExceptionMapper;
 import org.apache.lens.server.metrics.MetricsServiceImpl;
+import org.apache.lens.server.model.MappedDiagnosticLogSegregationContext;
 import org.apache.lens.server.ui.UIApp;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +43,6 @@ import org.glassfish.grizzly.servlet.WebappContext;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.slf4j.MDC;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.codahale.metrics.servlets.AdminServlet;
@@ -186,7 +185,7 @@ public class LensServer {
   public static void main(String[] args) throws Exception {
 
     final String runId = UUID.randomUUID().toString();
-    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), runId);
+    new MappedDiagnosticLogSegregationContext().set(runId);
 
     printStartupMessage();
     try {

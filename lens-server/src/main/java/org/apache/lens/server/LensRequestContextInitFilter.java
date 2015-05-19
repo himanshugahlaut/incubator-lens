@@ -25,9 +25,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
-import org.apache.lens.server.api.common.Constant;
-
-import org.slf4j.MDC;
+import org.apache.lens.server.model.MappedDiagnosticLogSegregationContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +36,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Priority(1)
-public class InitialRequestFilter implements ContainerRequestFilter {
+public class LensRequestContextInitFilter implements ContainerRequestFilter {
+
+  private static final String REQUEST_ID = "requestId";
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -48,11 +48,11 @@ public class InitialRequestFilter implements ContainerRequestFilter {
     /* Create a unique identifier for request */
     String uniqueRequesId = UUID.randomUUID().toString();
 
-    /* Add request id to Slf4j MDC for appearing in every log line */
-    MDC.put(Constant.LOG_SEGREGATION_ID.getValue(), uniqueRequesId);
+    /* Add request id for appearing in every log line */
+    new MappedDiagnosticLogSegregationContext().set(uniqueRequesId);
 
     /* Add request id to headers */
-    requestContext.getHeaders().add(Constant.REQUEST_ID.getValue(), uniqueRequesId);
+    requestContext.getHeaders().add(REQUEST_ID, uniqueRequesId);
 
     log.debug("Leaving {}", getClass().getName());
   }

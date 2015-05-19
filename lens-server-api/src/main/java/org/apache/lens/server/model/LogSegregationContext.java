@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.lens.server.api.common;
+package org.apache.lens.server.model;
 
-public enum Constant {
+public interface LogSegregationContext {
 
-  REQUEST_ID("requestId"),
-  LOG_SEGREGATION_ID("logSegregationId"),
-  QUERY_HANDLE_NOT_AVAILABLE("query handle not available");
+  /**
+   * Sets an id to be used by current thread in every log line for log segregation
+   *
+   * @param id the id to be added to every log line of current thread
+   */
+  void set(final String id);
 
-  Constant(final String value) {
-    this.value = value;
-  }
-
-  public String getValue() {
-    return this.value;
-  }
-
-  private final String value;
+  /**
+   *
+   * @return the id being used by the current thread for log segregation
+   */
+  String get();
 }

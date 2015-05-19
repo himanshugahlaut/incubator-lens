@@ -75,7 +75,7 @@ public class LensApplication extends Application {
     }
 
     LOG.debug("InitialRequestFilter added...");
-    classes.add(InitialRequestFilter.class);
+    classes.add(LensRequestContextInitFilter.class);
 
     return classes;
   }
