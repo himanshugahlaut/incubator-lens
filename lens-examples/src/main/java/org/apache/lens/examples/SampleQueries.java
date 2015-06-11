@@ -131,7 +131,7 @@ public class SampleQueries {
       }
       total++;
       System.out.println("Query:" + query);
-      QueryHandle handle = queryClient.executeQuery(query, true, null);
+      QueryHandle handle = queryClient.executeQuery(query, true, null).getData();
       System.out.println("Status:" + queryClient.getQuery().getStatus());
       System.out.println("Total time in millis:"
         + (queryClient.getQuery().getFinishTime() - queryClient.getQuery().getSubmissionTime()));

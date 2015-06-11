@@ -18,6 +18,10 @@
  */
 package org.apache.lens.client.exceptions;
 
+import static com.google.common.base.Preconditions.checkState;
+
+import org.apache.lens.api.result.LensAPIResult;
+
 /**
  * The Class LensClientException.
  */
@@ -26,12 +30,7 @@ public class LensClientException extends RuntimeException {
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
-  /** The message. */
-  private final String message;
-
-  /** The cause. */
-  private Exception cause;
-
+  private LensAPIResult lensAPIErrorResult;
   /**
    * Instantiates a new lens client exception.
    *
@@ -39,8 +38,7 @@ public class LensClientException extends RuntimeException {
    * @param cause   the cause
    */
   public LensClientException(String message, Exception cause) {
-    this.message = message;
-    this.cause = cause;
+    super(message, cause);
   }
 
   /**
@@ -49,16 +47,23 @@ public class LensClientException extends RuntimeException {
    * @param message the message
    */
   public LensClientException(String message) {
-    this.message = message;
+    super(message);
   }
 
-  @Override
-  public String getMessage() {
-    return message;
+  public LensClientException(final LensAPIResult lensAPIErrorResult) {
+    checkState(lensAPIErrorResult.isErrorResult());
+    this.lensAPIErrorResult = lensAPIErrorResult;
   }
 
-  @Override
-  public Exception getCause() {
-    return cause;
+  public int getErrorCode() {
+    return this.lensAPIErrorResult.getErrorCode();
+  }
+
+  public String getLensAPIErrorMessage() {
+    return this.lensAPIErrorResult.getErrorMessage();
+  }
+
+  public String getRequestId() {
+    return this.lensAPIErrorResult.getId();
   }
 }
