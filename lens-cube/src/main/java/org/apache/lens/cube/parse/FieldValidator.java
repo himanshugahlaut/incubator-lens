@@ -64,7 +64,8 @@ public class FieldValidator implements ContextRewriter {
       Set<String> queriedMsrs = new LinkedHashSet<String>(cubeql.getQueriedMsrs());
       queriedMsrs.addAll(getMeasuresFromExprMeasures(cubeql));
       Set<String> chainedSrcColumns = new HashSet<String>();
-      Set<String> nonQueryableFields = new LinkedHashSet<String>(cubeql.getQueriedTimeDimCols());
+      Set<String> hi = cubeql.getQueriedTimeDimCols();
+      Set<String> nonQueryableFields = new LinkedHashSet<String>();
 
       findDimAttrsAndChainSourceColumns(cubeql, cubeql.getGroupByAST(), queriedDimAttrs, chainedSrcColumns,
           nonQueryableFields);

@@ -290,19 +290,60 @@ public class FieldsCannotBeQueriedTogetherTest extends TestQueryRewrite {
   public void testQueryWithTimeDimensionAndMeasure() throws ParseException, SemanticException, LensException {
 
     /* If a time dimension and measure are not present in the same derived cube then query shall be disallowed.
-    * The testQuery in this test uses d_time which is a time dimension in basecube. */
+
+    The testQuery in this test uses d_time in time range func. d_time is a time dimension in basecube.
+    d_time is present as a dimension in derived cube where as msr2 is not present in the same derived cube, hence
+    the query shall be disallowed */
+
+    testFieldsCannotBeQueriedTogetherError("select msr2 from basecube where "
+        + "time_range_in(d_time, '" + getDateUptoHours(TWODAYS_BACK) + "','" + getDateUptoHours(CubeTestSetup.NOW)
+            + "')", Arrays.asList("d_time, msr2"));
+  }
+
+  @Test
+  public void testQueryWtihTimeDimAndReplaceTimeDimSwitchTrue() throws ParseException, SemanticException, LensException {
+
+    /* If a time dimension and measure are not present in the same derived cube then query shall be disallowed, even if
+    CubeQueryConfUtil.REPLACE_TIMEDIM_WITH_PART_COL is set to true.
+
+    The testQuery in this test uses its own queryConf which has lens.cube.query.replace.timedim set to true.
+    The query also uses d_time which is a time dimension in basecube.
+    d_time is present as a dimension in derived cube where as msr2 is not present in the same derived cube, hence
+    the query shall be disallowed */
+
+    Configuration queryConf = new Configuration(conf);
+    queryConf.setBoolean(CubeQueryConfUtil.REPLACE_TIMEDIM_WITH_PART_COL, true);
+
+    testFieldsCannotBeQueriedTogetherError(
+        "select d_time, msr2 from basecube where " + "time_range_in(d_time, '" + getDateUptoHours(TWODAYS_BACK) + "','"
+            + getDateUptoHours(CubeTestSetup.NOW) + "')", Arrays.asList("d_time, msr2"), queryConf);
+  }
+
+  @Test
+  public void testQueryWithTimeDimAndTimeDimToPartColReplacementSwitch() throws ParseException, SemanticException, LensException {
+
+    /* If a time dimension and measure are not present in the same derived cube then query shall be disallowed.
+
+    The testQuery in this test uses d_time which is a time dimension in basecube.
+    d_time is not present in the same derived cube as msr1, hence it shall be disallowed */
 
     testFieldsCannotBeQueriedTogetherError("select d_time, msr1 from basecube where "
         + "time_range_in(d_time, '" + getDateUptoHours(TWODAYS_BACK) + "','" + getDateUptoHours(CubeTestSetup.NOW)
-            + "')", Arrays.asList("msr1"));
+        + "')", Arrays.asList("d_time, msr1"));
   }
 
   private void testFieldsCannotBeQueriedTogetherError(final String testQuery, final List<String> conflictingFields)
     throws ParseException, SemanticException, LensException {
+    testFieldsCannotBeQueriedTogetherError(testQuery, conflictingFields, conf);
+  }
+
+  private void testFieldsCannotBeQueriedTogetherError(final String testQuery, final List<String> conflictingFields,
+      final Configuration queryConf)
+      throws ParseException, SemanticException, LensException {
 
     try {
 
-      String hqlQuery = rewrite(testQuery, conf);
+      String hqlQuery = rewrite(testQuery, queryConf);
       fail("Expected FieldsCannotBeQueriedTogetherException but it didn't come, rewrittenQuery:" + hqlQuery);
     } catch(FieldsCannotBeQueriedTogetherException actualException) {
 

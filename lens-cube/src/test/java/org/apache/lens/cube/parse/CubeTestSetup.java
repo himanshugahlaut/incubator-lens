@@ -846,6 +846,7 @@ public class CubeTestSetup {
     Set<String> dimensions = new HashSet<String>();
     dimensions.add("dim1");
     dimensions.add("dim11");
+    dimensions.add("d_time");
     client.createDerivedCube(BASE_CUBE_NAME, DERIVED_CUBE_NAME1, measures, dimensions, derivedProperties, 5L);
 
     measures = new HashSet<String>();
