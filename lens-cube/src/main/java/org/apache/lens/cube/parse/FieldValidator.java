@@ -32,6 +32,8 @@ import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Validate fields based on cube queryability
  */
@@ -62,18 +64,20 @@ public class FieldValidator implements ContextRewriter {
       Set<String> queriedMsrs = new LinkedHashSet<String>(cubeql.getQueriedMsrs());
       queriedMsrs.addAll(getMeasuresFromExprMeasures(cubeql));
       Set<String> chainedSrcColumns = new HashSet<String>();
-      Set<String> nonQueryableFields = new LinkedHashSet<String>();
+      Set<String> nonQueryableFields = new LinkedHashSet<String>(cubeql.getQueriedTimeDimCols());
 
-      findDimAttrsAndChainSourceColumns(cubeql, cubeql.getGroupByAST(), queriedDimAttrs,
-        chainedSrcColumns, nonQueryableFields);
+      findDimAttrsAndChainSourceColumns(cubeql, cubeql.getGroupByAST(), queriedDimAttrs, chainedSrcColumns,
+          nonQueryableFields);
       findDimAttrsAndChainSourceColumns(cubeql, cubeql.getWhereAST(), queriedDimAttrs,
         chainedSrcColumns, nonQueryableFields);
 
       // do validation
       // Find atleast one derived cube which contains all the dimensions
       // queried.
+
       boolean derivedCubeFound = false;
       for (DerivedCube dcube : dcubes) {
+
         if (dcube.getDimAttributeNames().containsAll(chainedSrcColumns)
           && dcube.getDimAttributeNames().containsAll(queriedDimAttrs)) {
           // remove all the measures that are covered
@@ -83,7 +87,6 @@ public class FieldValidator implements ContextRewriter {
       }
 
       final SortedSet<String> conflictingFields = new TreeSet<String>();
-
       if (!derivedCubeFound && !nonQueryableFields.isEmpty()) {
         conflictingFields.addAll(nonQueryableFields);
         throw new FieldsCannotBeQueriedTogetherException(new ConflictingFields(conflictingFields));
@@ -155,7 +158,6 @@ public class FieldValidator implements ContextRewriter {
               // Alternatively, check if this is a dimension attribute, if yes add it to the dim attribute set
               // and non queryable fields set
               nonQueryableColumns.add(colName);
-
               // If this is a referenced dim attribute leading to a chain, then instead of adding this
               // column, we add the source columns of the chain.
               if (cube.getDimAttributeByName(colName) instanceof ReferencedDimAtrribute

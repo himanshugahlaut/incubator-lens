@@ -18,7 +18,7 @@
  */
 package org.apache.lens.cube.parse;
 
-import static org.apache.lens.cube.parse.CubeTestSetup.TWO_DAYS_RANGE;
+import static org.apache.lens.cube.parse.CubeTestSetup.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
@@ -284,6 +284,17 @@ public class FieldsCannotBeQueriedTogetherTest extends TestQueryRewrite {
     testFieldsCannotBeQueriedTogetherError(
         "select citystatecapital, SUM(msr1) from basecube where " + TWO_DAYS_RANGE,
         Arrays.asList("citystatecapital", "msr1"));
+  }
+
+  @Test
+  public void testQueryWithTimeDimensionAndMeasure() throws ParseException, SemanticException, LensException {
+
+    /* If a time dimension and measure are not present in the same derived cube then query shall be disallowed.
+    * The testQuery in this test uses d_time which is a time dimension in basecube. */
+
+    testFieldsCannotBeQueriedTogetherError("select d_time, msr1 from basecube where "
+        + "time_range_in(d_time, '" + getDateUptoHours(TWODAYS_BACK) + "','" + getDateUptoHours(CubeTestSetup.NOW)
+            + "')", Arrays.asList("msr1"));
   }
 
   private void testFieldsCannotBeQueriedTogetherError(final String testQuery, final List<String> conflictingFields)
