@@ -30,7 +30,7 @@ import org.apache.lens.api.result.PrettyPrintable;
 import org.apache.lens.cli.commands.annotations.UserDocumentation;
 import org.apache.lens.client.LensClient;
 import org.apache.lens.client.exceptions.LensAPIException;
-import org.apache.lens.client.exceptions.LensClientBriefErrorException;
+import org.apache.lens.client.exceptions.LensBriefErrorException;
 import org.apache.lens.client.model.BriefError;
 import org.apache.lens.client.model.IdBriefErrorTemplate;
 import org.apache.lens.client.model.IdBriefErrorTemplateKey;
@@ -90,12 +90,12 @@ public class LensQueryCommands extends BaseLensCommand {
       } else {
         return formatResultSet(getClient().getResults(sql, queryName));
       }
-    } catch (LensAPIException e) {
+    } catch (final LensAPIException e) {
 
       BriefError briefError = new BriefError(e.getLensAPIErrorCode(), e.getLensAPIErrorMessage());
       cliOutput = new IdBriefErrorTemplate(IdBriefErrorTemplateKey.REQUEST_ID, e.getLensAPIRequestId(), briefError);
 
-    } catch (LensClientBriefErrorException e) {
+    } catch (final LensBriefErrorException e) {
       cliOutput = e.getIdBriefErrorTemplate();
     }
 

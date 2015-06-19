@@ -18,8 +18,6 @@
  */
 package org.apache.lens.client.exceptions;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import org.apache.lens.api.result.LensAPIResult;
 
 /**

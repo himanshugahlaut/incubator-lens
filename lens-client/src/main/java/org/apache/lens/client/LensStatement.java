@@ -34,7 +34,6 @@ import org.apache.lens.api.query.QueryStatus.Status;
 
 import org.apache.lens.api.result.LensAPIResult;
 import org.apache.lens.client.exceptions.LensAPIException;
-import org.apache.lens.client.exceptions.LensClientException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -71,7 +70,7 @@ public class LensStatement {
    * @param queryName              the query name
    */
   public LensAPIResult<QueryHandle> execute(String sql, boolean waitForQueryToComplete,
-      String queryName) {
+      String queryName) throws LensAPIException {
     LensAPIResult<QueryHandle> lensAPIResult = executeQuery(sql, waitForQueryToComplete, queryName);
     this.query = getQuery(lensAPIResult.getData());
     return lensAPIResult;
@@ -83,7 +82,7 @@ public class LensStatement {
    * @param sql       the sql
    * @param queryName the query name
    */
-  public void execute(String sql, String queryName) {
+  public void execute(String sql, String queryName) throws LensAPIException {
     QueryHandle handle = executeQuery(sql, true, queryName).getData();
     this.query = getQuery(handle);
   }
@@ -97,7 +96,7 @@ public class LensStatement {
    * @return the query handle
    */
   public LensAPIResult<QueryHandle> executeQuery(String sql, boolean waitForQueryToComplete,
-      String queryName) {
+      String queryName) throws LensAPIException {
 
     LensAPIResult<QueryHandle> lensAPIResult = executeQuery(sql, queryName);
 
@@ -291,7 +290,7 @@ public class LensStatement {
    * @param queryName the query name
    * @return the query handle
    */
-  private LensAPIResult<QueryHandle> executeQuery(String sql, String queryName) {
+  private LensAPIResult<QueryHandle> executeQuery(String sql, String queryName) throws LensAPIException {
     if (!connection.isOpen()) {
       throw new IllegalStateException("Lens Connection has to be " + "established before querying");
     }

@@ -23,12 +23,12 @@ import org.apache.lens.client.model.IdBriefErrorTemplate;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class LensClientBriefErrorException extends RuntimeException {
+public class LensBriefErrorException extends RuntimeException {
 
   @Getter
   private final IdBriefErrorTemplate idBriefErrorTemplate;
 
-  public LensClientBriefErrorException(@NonNull final IdBriefErrorTemplate idBriefErrorTemplate) {
+  public LensBriefErrorException(@NonNull final IdBriefErrorTemplate idBriefErrorTemplate) {
     this.idBriefErrorTemplate = idBriefErrorTemplate;
   }
 }

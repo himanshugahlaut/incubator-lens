@@ -28,7 +28,8 @@ import org.apache.lens.api.APIResult;
 import org.apache.lens.api.metastore.*;
 import org.apache.lens.api.query.*;
 import org.apache.lens.api.result.LensAPIResult;
-import org.apache.lens.client.exceptions.LensClientBriefErrorException;
+import org.apache.lens.client.exceptions.LensAPIException;
+import org.apache.lens.client.exceptions.LensBriefErrorException;
 import org.apache.lens.client.model.BriefError;
 import org.apache.lens.client.model.IdBriefErrorTemplate;
 import org.apache.lens.client.model.IdBriefErrorTemplateKey;
@@ -91,7 +92,7 @@ public class LensClient {
     return mc;
   }
 
-  public LensAPIResult<QueryHandle> executeQueryAsynch(String sql, String queryName) {
+  public LensAPIResult<QueryHandle> executeQueryAsynch(String sql, String queryName) throws LensAPIException {
     LOG.debug("Executing query " + sql);
     LensAPIResult<QueryHandle> lensAPIResult = statement.execute(sql, false, queryName);
     LensQuery query = statement.getQuery();
@@ -128,7 +129,7 @@ public class LensClient {
     }
   }
 
-  public LensClientResultSetWithStats getResults(String sql, String queryName) {
+  public LensClientResultSetWithStats getResults(String sql, String queryName) throws LensAPIException {
     LOG.debug("Executing query " + sql);
     statement.execute(sql, true, queryName);
     return getResultsFromStatement(statement);
@@ -139,7 +140,7 @@ public class LensClient {
     if (status != QueryStatus.Status.SUCCESSFUL) {
       IdBriefErrorTemplate errorResult = new IdBriefErrorTemplate(IdBriefErrorTemplateKey.QUERY_ID,
           statement.getQueryHandleString(), new BriefError(statement.getErrorCode(), statement.getErrorMessage()));
-      throw new LensClientBriefErrorException(errorResult);
+      throw new LensBriefErrorException(errorResult);
     }
     LensClientResultSet result = null;
     if (statement.getStatus().isResultSetAvailable()) {
