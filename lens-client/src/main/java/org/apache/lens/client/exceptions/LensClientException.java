@@ -49,21 +49,4 @@ public class LensClientException extends RuntimeException {
   public LensClientException(String message) {
     super(message);
   }
-
-  public LensClientException(final LensAPIResult lensAPIErrorResult) {
-    checkState(lensAPIErrorResult.isErrorResult());
-    this.lensAPIErrorResult = lensAPIErrorResult;
-  }
-
-  public int getErrorCode() {
-    return this.lensAPIErrorResult.getErrorCode();
-  }
-
-  public String getLensAPIErrorMessage() {
-    return this.lensAPIErrorResult.getErrorMessage();
-  }
-
-  public String getRequestId() {
-    return this.lensAPIErrorResult.getId();
-  }
 }

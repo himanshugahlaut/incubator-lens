@@ -23,12 +23,12 @@ import org.apache.lens.client.model.IdBriefErrorTemplate;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class LensClientAsyncQueryFailedException extends RuntimeException {
+public class LensClientBriefErrorException extends RuntimeException {
 
   @Getter
-  private IdBriefErrorTemplate errorResult;
+  private final IdBriefErrorTemplate idBriefErrorTemplate;
 
-  public LensClientAsyncQueryFailedException(@NonNull final IdBriefErrorTemplate errorResult) {
-    this.errorResult = errorResult;
+  public LensClientBriefErrorException(@NonNull final IdBriefErrorTemplate idBriefErrorTemplate) {
+    this.idBriefErrorTemplate = idBriefErrorTemplate;
   }
 }

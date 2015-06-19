@@ -33,6 +33,7 @@ import org.apache.lens.api.query.*;
 import org.apache.lens.api.query.QueryStatus.Status;
 
 import org.apache.lens.api.result.LensAPIResult;
+import org.apache.lens.client.exceptions.LensAPIException;
 import org.apache.lens.client.exceptions.LensClientException;
 
 import org.apache.commons.lang.StringUtils;
@@ -312,7 +313,7 @@ public class LensStatement {
       return response.readEntity(new GenericType<LensAPIResult<QueryHandle>>() {});
     }
 
-    throw new LensClientException(response.readEntity(LensAPIResult.class));
+    throw new LensAPIException(response.readEntity(LensAPIResult.class));
   }
 
   /**
