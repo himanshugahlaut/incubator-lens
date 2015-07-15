@@ -20,6 +20,8 @@ package org.apache.lens.server;
 
 import javax.ws.rs.core.Application;
 
+import org.apache.lens.api.result.LensJAXBContextResolver;
+
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 

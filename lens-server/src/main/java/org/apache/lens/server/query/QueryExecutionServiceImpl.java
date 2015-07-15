@@ -555,12 +555,6 @@ public class QueryExecutionServiceImpl extends BaseLensService implements QueryE
             try {
               // acquire session before any query operation.
               acquire(query.getLensSessionIdentifier());
-              // the check to see if the query was already rewritten and selected driver's rewritten query is set
-              if (!query.isDriverQueryExplicitlySet()) {
-                rewriteAndSelect(query);
-              } else {
-                log.debug("Query is already rewritten");
-              }
 
               /* Check javadoc of QueryExecutionServiceImpl#removalFromLaunchedQueriesLock for reason for existence
               of this lock. */
@@ -1695,6 +1689,7 @@ public class QueryExecutionServiceImpl extends BaseLensService implements QueryE
    */
   private QueryHandle executeAsyncInternal(LensSessionHandle sessionHandle, QueryContext ctx) throws LensException {
     ctx.setLensSessionIdentifier(sessionHandle.getPublicId().toString());
+    rewriteAndSelect(ctx);
     QueryStatus before = ctx.getStatus();
     ctx.setStatus(new QueryStatus(0.0, QUEUED, "Query is queued", false, null, null, null));
     queuedQueries.add(ctx);
