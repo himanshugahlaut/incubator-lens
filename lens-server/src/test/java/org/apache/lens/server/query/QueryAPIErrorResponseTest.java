@@ -139,7 +139,7 @@ public class QueryAPIErrorResponseTest extends LensJerseyTest {
 
     LensSessionHandle sessionId = openSession(target(), "foo", "bar", new LensConf());
 
-    Response response = runQuery(target(), Optional.of(sessionId), Optional.of(MOCK_QUERY),
+    Response response = postQuery(target(), Optional.of(sessionId), Optional.of(MOCK_QUERY),
         Optional.of(INVALID_OPERATION));
 
     final String expectedErrMsg = "Provided Operation is not supported. Supported Operations are: "

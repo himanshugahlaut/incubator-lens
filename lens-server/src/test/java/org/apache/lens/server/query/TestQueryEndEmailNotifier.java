@@ -194,59 +194,27 @@ public class TestQueryEndEmailNotifier extends LensJerseyTest {
   @Test
   public void testEmailNotification() throws InterruptedException {
     wiser.start();
+
+    // formatting failure
     LensConf conf = new LensConf();
-    // launch failure
-    QueryHandle handle = launchAndWaitForQuery(conf, "select ID from non_exist_table", QueryStatus.Status.FAILED);
+    conf.addProperty(LensConfConstants.QUERY_PERSISTENT_RESULT_SET, "true");
+    conf.addProperty(LensConfConstants.QUERY_PERSISTENT_RESULT_INDRIVER, "false");
+    conf.addProperty(LensConfConstants.QUERY_OUTPUT_SERDE, "NonexistentSerde.class");
+    QueryHandle handle = launchAndWaitForQuery(conf, "select ID, IDSTR from " + TEST_TABLE,
+      QueryStatus.Status.FAILED);
     List<WiserMessage> messages = new ArrayList<WiserMessage>();
     for (int i = 0; i < NUM_ITERS; i++) {
       messages = wiser.getMessages();
       if (messages.size() >= 4) {
         break;
       }
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     }
 
     Assert.assertEquals(messages.size(), 4);
     Assert.assertTrue(messages.get(0).toString().contains(handle.toString()));
-    Assert.assertTrue(messages.get(0).toString().contains("Launching query failed"));
+    Assert.assertTrue(messages.get(0).toString().contains("Result formatting failed!"));
     Assert.assertTrue(messages.get(0).toString().contains("Reason"));
-
-    // rewriter failure
-    handle = launchAndWaitForQuery(conf, "cube select ID from nonexist", QueryStatus.Status.FAILED);
-    messages = new ArrayList<WiserMessage>();
-    for (int i = 0; i < NUM_ITERS; i++) {
-      messages = wiser.getMessages();
-      if (messages.size() >= 8) {
-        break;
-      }
-      Thread.sleep(10000);
-    }
-
-    Assert.assertEquals(messages.size(), 8);
-    Assert.assertTrue(messages.get(4).toString().contains(handle.toString()));
-    Assert.assertTrue(messages.get(4).toString().contains("Launching query failed"));
-    Assert.assertTrue(messages.get(4).toString().contains("Reason"));
-
-    // formatting failure
-    conf = new LensConf();
-    conf.addProperty(LensConfConstants.QUERY_PERSISTENT_RESULT_SET, "true");
-    conf.addProperty(LensConfConstants.QUERY_PERSISTENT_RESULT_INDRIVER, "false");
-    conf.addProperty(LensConfConstants.QUERY_OUTPUT_SERDE, "NonexistentSerde.class");
-    handle = launchAndWaitForQuery(conf, "select ID, IDSTR from " + TEST_TABLE,
-      QueryStatus.Status.FAILED);
-    messages = new ArrayList<WiserMessage>();
-    for (int i = 0; i < NUM_ITERS; i++) {
-      messages = wiser.getMessages();
-      if (messages.size() >= 12) {
-        break;
-      }
-      Thread.sleep(10000);
-    }
-
-    Assert.assertEquals(messages.size(), 12);
-    Assert.assertTrue(messages.get(8).toString().contains(handle.toString()));
-    Assert.assertTrue(messages.get(8).toString().contains("Result formatting failed!"));
-    Assert.assertTrue(messages.get(8).toString().contains("Reason"));
 
     // execution failure
     conf = new LensConf();
@@ -258,16 +226,16 @@ public class TestQueryEndEmailNotifier extends LensJerseyTest {
     messages = new ArrayList<WiserMessage>();
     for (int i = 0; i < NUM_ITERS; i++) {
       messages = wiser.getMessages();
-      if (messages.size() >= 16) {
+      if (messages.size() >= 8) {
         break;
       }
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     }
 
-    Assert.assertEquals(messages.size(), 16);
-    Assert.assertTrue(messages.get(12).toString().contains(handle.toString()));
-    Assert.assertTrue(messages.get(12).toString().contains("Query execution failed!"));
-    Assert.assertTrue(messages.get(12).toString().contains("Reason"));
+    Assert.assertEquals(messages.size(), 8);
+    Assert.assertTrue(messages.get(4).toString().contains(handle.toString()));
+    Assert.assertTrue(messages.get(4).toString().contains("Query execution failed!"));
+    Assert.assertTrue(messages.get(4).toString().contains("Reason"));
 
     // successful query
     conf = new LensConf();
@@ -277,15 +245,15 @@ public class TestQueryEndEmailNotifier extends LensJerseyTest {
     messages = new ArrayList<WiserMessage>();
     for (int i = 0; i < NUM_ITERS; i++) {
       messages = wiser.getMessages();
-      if (messages.size() >= 20) {
+      if (messages.size() >= 12) {
         break;
       }
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     }
-    Assert.assertEquals(messages.size(), 20);
-    Assert.assertTrue(messages.get(16).toString().contains(handle.toString()));
-    Assert.assertTrue(messages.get(16).toString().contains("Query  SUCCESSFUL"));
-    Assert.assertTrue(messages.get(16).toString().contains("Result available at"));
+    Assert.assertEquals(messages.size(), 12);
+    Assert.assertTrue(messages.get(8).toString().contains(handle.toString()));
+    Assert.assertTrue(messages.get(8).toString().contains("Query  SUCCESSFUL"));
+    Assert.assertTrue(messages.get(8).toString().contains("Result available at"));
     wiser.stop();
   }
 }

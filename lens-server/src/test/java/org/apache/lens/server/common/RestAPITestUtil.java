@@ -47,6 +47,9 @@ public class RestAPITestUtil {
     throw new UnsupportedOperationException();
   }
 
+  public static LensSessionHandle openFooBarSession(final WebTarget target) {
+    return openSession(target, "foo", "bar");
+  }
   public static LensSessionHandle openSession(final WebTarget target, final String userName, final String passwd) {
     return openSession(target, userName, passwd, new LensConf());
   }
@@ -64,20 +67,21 @@ public class RestAPITestUtil {
   public static Response estimate(final WebTarget target, final Optional<LensSessionHandle> sessionId,
       final Optional<String> query) {
 
-    return runQuery(target, sessionId, query, Optional.of("estimate"));
-  }
-  public static Response explain(final WebTarget target, final Optional<LensSessionHandle> sessionId,
-    final Optional<String> query) {
-    return runQuery(target, sessionId, query, Optional.of("explain"));
+    return postQuery(target, sessionId, query, Optional.of("estimate"));
   }
 
-  public static Response runQuery(final WebTarget target, final Optional<LensSessionHandle> sessionId,
+  public static Response execute(final WebTarget target, final Optional<LensSessionHandle> sessionId,
+    final Optional<String> query) {
+    return postQuery(target, sessionId, query, Optional.of("execute"));
+  }
+
+  public static Response postQuery(final WebTarget target, final Optional<LensSessionHandle> sessionId,
       final Optional<String> query, final Optional<String> operation) {
 
-    return runQuery(target, sessionId, query, operation, new LensConf());
+    return postQuery(target, sessionId, query, operation, new LensConf());
   }
 
-  public static Response runQuery(final WebTarget target, final Optional<LensSessionHandle> sessionId,
+  public static Response postQuery(final WebTarget target, final Optional<LensSessionHandle> sessionId,
       final Optional<String> query, final Optional<String> operation, final LensConf conf) {
 
     FormDataMultiPart mp = FormDataMultiPartFactory
