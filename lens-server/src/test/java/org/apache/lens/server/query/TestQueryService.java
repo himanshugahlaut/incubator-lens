@@ -20,6 +20,9 @@ package org.apache.lens.server.query;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
+import static org.apache.lens.server.common.RestAPITestUtil.execute;
+import static org.apache.lens.server.common.RestAPITestUtil.waitForQueryToFinish;
+
 import static org.testng.Assert.*;
 
 import java.io.*;
@@ -78,6 +81,7 @@ import org.testng.annotations.Test;
 
 import com.codahale.metrics.MetricRegistry;
 
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -230,6 +234,28 @@ public class TestQueryService extends LensJerseyTest {
         MediaType.APPLICATION_XML_TYPE));
     final Response response = target.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE));
     assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+  }
+
+  /**
+   * Test launch failure in execute operation.
+   *
+   * @throws InterruptedException the interrupted exception
+   */
+  @Test
+  public void testLaunchFail() throws InterruptedException {
+
+    final Response response = execute(target(), Optional.of(lensSessionId), Optional.of("select fail from non_exist"));
+    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+
+    QueryHandle handle = response.readEntity(new GenericType<LensAPIResult<QueryHandle>>() {}).getData();
+    LensQuery lensQuery = waitForQueryToFinish(target(), lensSessionId, handle);
+
+    assertTrue(lensQuery.getSubmissionTime() > 0);
+    assertEquals(lensQuery.getLaunchTime(), 0);
+    assertEquals(lensQuery.getDriverStartTime(), 0);
+    assertEquals(lensQuery.getDriverFinishTime(), 0);
+    assertTrue(lensQuery.getFinishTime() > 0);
+    assertEquals(lensQuery.getStatus().getStatus(), QueryStatus.Status.FAILED);
   }
 
   // test with execute async post, get all queries, get query context,
